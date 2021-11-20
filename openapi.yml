@@ -1,0 +1,79 @@
+openapi: '3.0.2'
+info:
+  title: Novo App
+  version: '1.0'
+  description: A book server that serves all kinds of books (novels, comics, manga and whatnots)
+servers:
+  - url: http://localhost:7001
+paths:
+  /oauth/{provider}:
+    get:
+      summary: OAuth login initialize
+      description: Redirects client to OAuth provider page for 3-legged authentication.
+      responses:
+        '302':
+          description: Redirect to the provider page.
+      tags:
+      - "Users"
+  /login:
+    post:
+      summary: Password login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login success
+        '401':
+          description: Invalid credentials
+      tags:
+        - "Users"
+    get:
+      summary: Oauth login
+      description: Client goes to this page after having received the oauth code from provider (Google)
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          description: The provider of the OAuth service.
+          schema:
+            type: string
+        - name: code
+          in: path
+          required: true
+          description: Code received after client successfully verified by the oauth provider side.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Login success
+        '401':
+          description: Invalid credentials
+      tags:
+        - "Users"
+
+
+tags:
+  - name: Users
+    description: For all user related operations.
+  - name: Book Groups
+    description: Representing folders for book chapters (can also be called book titles).
+  - name: Book Chapters
+    description: May hold hypertext content or images
+
+components:
+  securitySchemes:
+    bearerAuth:            # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT    # optional, arbitrary value for documentation purposes
+security:
+  - bearerAuth: []         # use the same name as above
