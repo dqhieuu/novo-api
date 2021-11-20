@@ -12,7 +12,9 @@ paths:
       description: Redirects client to OAuth provider page for 3-legged authentication.
       responses:
         '302':
-          description: Redirect to the provider page.
+          description: Redirect to the provider page
+        '404':
+          description: Provider not found
       tags:
       - "Users"
   /login:
@@ -59,6 +61,32 @@ paths:
           description: Invalid credentials
       tags:
         - "Users"
+  /search-suggest/{query}:
+    get:
+      summary: Search suggestion
+      description: Suggestion when typing text in the search box.
+      parameters:
+        - name: query
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Returning 200 even when list returned is empty"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  list:
+                    type: array
+                  
+              
+
+
+
+
 
 
 tags:
