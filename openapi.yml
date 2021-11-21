@@ -31,14 +31,17 @@ paths:
           application/json:
             schema:
               type: object
+              required: [username, password]
               properties:
-                username:
+                usernameOrEmail:
                   type: string
+                  example: Người dùng X
+                  minLength: 6
                 password:
-                  type: string
+                  $ref: '#/components/schemas/Password'
       responses:
         '200':
-          description: Login success
+          description: Successful login
         '401':
           description: Invalid credentials
       tags:
@@ -47,9 +50,9 @@ paths:
       operationId: loginByOauthCode
     get:
       summary: Oauth login
-      description: >-
+      description: >
         Client goes to this page after having received the oauth code from
-        provider (Google)
+        provider (Google). It's performed automatically.
       parameters:
         - name: provider
           in: path
@@ -57,12 +60,14 @@ paths:
           description: The provider of the OAuth service.
           schema:
             type: string
+            enum:
+              - google
         - name: code
           in: path
           required: true
-          description: >-
-            Code received after client successfully verified by the oauth
-            provider side.
+          description: >
+            Code received after the client has successfully been verified by the OAuth
+            provider side. (Embedded in the redirect link)
           schema:
             type: string
       responses:
@@ -70,6 +75,8 @@ paths:
           description: Login success
         '401':
           description: Invalid credentials
+        '404':
+          description: Provider not found
       tags:
         - Users
       operationId: loginByPassword
@@ -83,6 +90,9 @@ paths:
           required: true
           schema:
             type: string
+            example: solo lev
+            maxLength: 100
+
       responses:
         '200':
           description: Empty list also returns 200
@@ -91,40 +101,87 @@ paths:
               schema:
                 type: object
                 properties:
-                  list:
+                  books:
                     type: array
+                    description: A suggestion list of books when searching.
                     items:
                       type: object
                       properties:
                         thumbnail:
+                          description: A small-sized thumbnail
                           type: string
+                          example: anh.jpg
                         title:
                           type: string
+                          description: Book title
+                          example: Boku no pico
+                        latestChapter:
+                          type: number
+                          description: The highest number chapter
+                          example: 16.5
       tags:
         - Book Groups
       operationId: searchSuggestion
   '/search/{query}':
     get:
       summary: Search result
-      description: Book group result after hitting enter.
+      description: Result page containing book groups after hitting enter.
       parameters:
         - name: query
           in: path
           required: true
           schema:
             type: string
-          description: ''
+            example: solo leveling
         - name: page
           in: query
           required: false
           schema:
-            type: string
-            default: '1'
-          description: 'If not specified, page = 1. '
+            type: integer
+            default: 1
+          description: May clamp to first/last page for better ux (page <= 0, page = 9999)
       operationId: getSearchResult
       responses:
-        default:
-          description: Default response
+        200:
+          description: Query success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  lastPage:
+                    type: integer
+                    description: The last page number for pagination purposes
+                    example: 15
+                  books:
+                    type: array
+                    description: Books in a dedicated search page
+                       have more information than when searching.
+                    items:
+                      type: object
+                      properties:
+                        thumbnail:
+                          description: A medium-sized thumbnail
+                          type: string
+                          example: anh.jpg
+                        title:
+                          type: string
+                          example: Boku no pico
+                        latestChapter:
+                          type: number
+                          example: 16.5
+                        comments:
+                          description: Number of comments
+                          type: integer
+                          example: 105
+                        views:
+                          description: Number of views
+                          type: integer
+                          example: 15324
+                        likes:
+                          description: The result of likes minus dislikes.
+                          type: integer
+                          example: 24
       tags:
         - Book Groups
   '/chapter/{chapterId}':
@@ -139,31 +196,70 @@ paths:
           required: true
           schema:
             type: string
-          description: Id of chapter from database
+          description: Id of a chapter from the database
       operationId: getChapterByChapterId
       responses:
-        default:
-          description: Default response
+        200:
+          description: OK
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  pages:
-                    type: array
-                    items:
-                      type: string
-                  nextChapter:
-                    type: string
-                  prevChapter:
-                    type: string
+                oneOf:
+                  - type: object
+                    properties:
+                      type:
+                        type: string
+                        example: images
+                        enum:
+                          - images
+                      images:
+                        type: array
+                        description: A list of image urls
+                        items:
+                          type: string
+                      nextChapter:
+                        description: Url to the next chapter
+                        type: string
+                      prevChapter:
+                        description: Url to the previous chapter
+                        type: string
+                    required:
+                      - type
+                      - images
+                  - type: object
+                    required:
+                      - type
+                      - textContent
+                    properties:
+                      type:
+                        type: string
+                        example: hypertext
+                        enum:
+                          - hypertext
+                      textContent:
+                        type: string
+                        example: Call me Ishmael. Some years ago...
+                        description: The content for a text chapter (may contain markdown formattting)
+                      nextChapter:
+                        description: Url to the next chapter
+                        type: string
+                      prevChapter:
+                        description: Url to the previous chapter
+                        type: string
+        404:
+          description: Chapter not found
       security: []
       tags:
         - Book Chapters
     delete:
       summary: Delete a book chapter
       description: ''
-      parameters: []
+      parameters:
+        - name: chapterId
+          in: path
+          schema:
+            type: number
+          required: true
       operationId: deleteChapterByChapterId
       responses:
         '200':
@@ -174,71 +270,95 @@ paths:
           description: Can't find book chapter
       tags:
         - Book Chapters
-    patch:
-      summary: Update book chapter content
-      description: ''
-      parameters: []
-      operationId: updateChapterByChapterId
-      responses:
-        default:
-          description: Default response
-      tags:
-        - Book Chapters
+    # patch:
+    #   summary: Update book chapter content
+    #   description: ''
+    #   parameters: []
+    #   operationId: updateChapterByChapterId
+    #   responses:
+    #     default:
+    #       description: Default response
+    #   tags:
+    #     - Book Chapters
   /chapter/:
     post:
       summary: Post a new chapter
-      description: A new book chapter to be posted
+      description: A new book chapter to be posted, must belong to a book group.
       parameters: []
       operationId: postNewChapter
       responses:
         default:
           description: Default response
       requestBody:
-        required: false
+        required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                bookGroup:
-                  type: integer
-                chapterNumber:
-                  type: number
-                type:
-                  type: string
-                textContent:
-                  type: string
-                images:
-                  type: array
-                  items:
-                    type: string
+              oneOf:
+                - type: object
+                  required:
+                    - bookGroupId
+                    - chapterNumber
+                    - type
+                    - textContent
+                  properties:
+                    bookGroupId:
+                      type: integer
+                      example: 25
+                    chapterNumber:
+                      type: number
+                      example: 6.8
+                    type:
+                      type: string
+                      enum: [hypertext]
+                    textContent:
+                      description: The hypertext content of the chapter.
+                      type: string
+                      example: "Some book content. Once upon..."
+                - type: object
+                  required:
+                    - bookGroupId
+                    - chapterNumber
+                    - type
+                    - images
+                  properties:
+                    bookGroupId:
+                      type: integer
+                      example: 25
+                    chapterNumber:
+                      type: number
+                      example: 6.8
+                    type:
+                      type: string
+                      enum: [images]
+                    images:
+                      description: IDs of images after uploaded to the server.
+                      type: array
+                      items:
+                        type: integer
       tags:
         - Book Chapters
-  '/comments/{bookId}/{chapterId}':
+  '/like/{bookGroupId}':
     get:
-      summary: Get comments from a book chapter
-      description: ''
+      summary: Get like count of a book group
+      description: This gets the like and dislike count of a book group
       parameters: []
-      operationId: getCommentsByChapterId
-      responses:
-        '200':
-          description: Default response
-          content:
-            application/json:
-              schema: {}
-      tags:
-        - Book Comments
-      security: []
-    post:
-      summary: Post comment to a book chapter
-      description: ''
-      parameters: []
-      operationId: postCommentByChapterId
+      operationId: getLikeAndDislikeCountByBookGroupId
       responses:
         default:
           description: Default response
       tags:
-        - Book Comments
+        - Book Groups
+    post:
+      summary: Like operations on a book group
+      description: Like/dislike/or unlike operation by a user for a book group
+      parameters: []
+      operationId: likeOperationsForBookGroup
+      responses:
+        default:
+          description: Default response
+      tags:
+        - Book Groups
   '/comments/{bookId}':
     get:
       summary: Get comments from a book group
@@ -253,7 +373,7 @@ paths:
       tags:
         - Book Comments
     post:
-      summary: Post comment in book group
+      summary: Post a comment in a book group
       description: Create a comment that isn't chapter specific
       parameters: []
       operationId: postCommentByBookGroupId
@@ -274,7 +394,7 @@ paths:
       tags:
         - Book Comments
     patch:
-      summary: Delete a book comment
+      summary: Update a book comment
       description: Doesn't need a specific book group. Id is global among all groups
       parameters: []
       operationId: updateCommentById
@@ -283,6 +403,138 @@ paths:
           description: Default response
       tags:
         - Book Comments
+  '/comment/{bookGroupId}':
+    get:
+      summary: Get comments from a book chapter
+      description: ''
+      parameters: []
+      operationId: getCommentsByChapterId
+      responses:
+        '200':
+          description: Default response
+          content:
+            application/json:
+              schema: {}
+      tags:
+        - Book Comments
+      security: []
+    post:
+      summary: Post a comment to a book chapter
+      description: ''
+      parameters: []
+      operationId: postCommentByChapterId
+      responses:
+        default:
+          description: Default response
+      tags:
+        - Book Comments
+  '/user/{userId}':
+    get:
+      summary: Get public user info
+      description: 'Get public user info (i.e., username, books posted, profile, avatar )'
+      parameters: []
+      operationId: getUserInfoById
+      responses:
+        default:
+          description: Default response
+      tags:
+        - Users
+  /register:
+    post:
+      summary: Register a new user (password)
+      description: Register a new user with password, username, and email. An alternative workflow 
+        is that user signs up/logs in with their account from an OAuth provider.
+      parameters: []
+      operationId: registerANewUser
+      responses:
+        default:
+          description: Default response
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: Must be at least 6 characters, not starting with a space, may contain at most 1 white spaces between characters, may contain special characters except control characters and line break characters. 
+                  example: Người dùng W1B00 ／人 ◕ ‿‿ ◕ 人＼
+                email:
+                  type: string
+                  example: example@example.com
+                  description: Standards compliant.
+                password:
+                  type: string
+                  description: Must be at least 8 characters
+                  example: A!B2Ce%%
+              required: [username, email, password]
+      tags:
+        - Users
+  '/author/{authorId}':
+    get:
+      summary: Get an author page
+      description: 'A complete author page, with books from author'
+      parameters: []
+      operationId: getAuthorById
+      responses:
+        default:
+          description: Default response
+      tags:
+        - Book Authors
+    patch:
+      summary: Update an author
+      description: 'Update author biography, name, aliases'
+      parameters: []
+      operationId: updateAuthorById
+      responses:
+        default:
+          description: Default response
+      tags:
+        - Book Authors
+    delete:
+      summary: Delete an author
+      description: Delete an author by id
+      parameters: []
+      operationId: deleteAuthorById
+      responses:
+        default:
+          description: Default response
+      tags:
+        - Book Authors
+  '/author':
+    post:
+      summary: Create a new author
+      description: 'A complete author page, with books from author'
+      parameters: []
+      operationId: createAuthor
+      responses:
+        default:
+          description: Default response
+      tags:
+        - Book Authors
+  /complete-oauth-register:
+    post:
+      summary: Complete OAuth registration
+      description: >-
+        User type in the username and maybe change their default profile picture
+        to complete registration
+      parameters: []
+      operationId: completeOauthRegister
+      responses:
+        default:
+          description: Default response
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  $ref: '#/components/schemas/Username'
+      tags:
+        - Users
 tags:
   - name: Users
     description: For all user related operations.
@@ -294,8 +546,6 @@ tags:
     description: User comments on book groups or book chapters
   - name: Book Authors
     description: People who write books (one book may have multiple authors)
-  - name: Book Covers
-    description: Galleries of cover arts for books. (Choose one to display as thumbnail)
 components:
   securitySchemes:
     bearerAuth:
@@ -304,6 +554,17 @@ components:
       bearerFormat: JWT
   links: {}
   callbacks: {}
-  schemas: {}
+  schemas:
+    Username:
+      type: string
+      minLength: 6
+      maxLength: 20
+      example: Ngdùng W1Bu ／人 ◕ ‿‿ ◕ 人＼
+    Password:
+      type: string
+      minLength: 8
+      maxLength: 50
+      example: t3stPAS!dảk
+
 security:
   - bearerAuth: []
