@@ -21,6 +21,7 @@ paths:
       tags:
         - Users
       parameters: []
+      operationId: goToOauthProvider
   /login:
     post:
       summary: Password login
@@ -43,6 +44,7 @@ paths:
       tags:
         - Users
       parameters: []
+      operationId: loginByOauthCode
     get:
       summary: Oauth login
       description: >-
@@ -70,6 +72,7 @@ paths:
           description: Invalid credentials
       tags:
         - Users
+      operationId: loginByPassword
   '/search-suggest/{query}':
     get:
       summary: Search suggestion
@@ -82,7 +85,7 @@ paths:
             type: string
       responses:
         '200':
-          description: Empty list returns 200 also
+          description: Empty list also returns 200
           content:
             application/json:
               schema:
@@ -99,41 +102,187 @@ paths:
                           type: string
       tags:
         - Book Groups
+      operationId: searchSuggestion
   '/search/{query}':
     get:
       summary: Search result
-      description: Search result from query.
+      description: Book group result after hitting enter.
       parameters:
         - name: query
           in: path
           required: true
           schema:
             type: string
+          description: ''
         - name: page
           in: query
+          required: false
           schema:
             type: string
+            default: '1'
+          description: 'If not specified, page = 1. '
+      operationId: getSearchResult
       responses:
-        '200':
-          description: Empty list also returns 200 
+        default:
+          description: Default response
+      tags:
+        - Book Groups
+  '/chapter/{chapterId}':
+    get:
+      summary: Get chapter page content
+      description: |-
+        All necessary content for displaying a chapter page.
+        There are links to the previous and next chapter
+      parameters:
+        - name: chapterId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Id of chapter from database
+      operationId: getChapterByChapterId
+      responses:
+        default:
+          description: Default response
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  list:
+                  pages:
                     type: array
                     items:
-                      type: object
-                      properties:
-                        thumbnail:
-                          type: string
-                          example: ./img/test.png
-                        title:
-                          type: string
-                          example: Boku no pico
+                      type: string
+                  nextChapter:
+                    type: string
+                  prevChapter:
+                    type: string
+      security: []
       tags:
-        - Book Groups
+        - Book Chapters
+    delete:
+      summary: Delete a book chapter
+      description: ''
+      parameters: []
+      operationId: deleteChapterByChapterId
+      responses:
+        '200':
+          description: Deleted successfully
+        '403':
+          description: Forbidden
+        '404':
+          description: Can't find book chapter
+      tags:
+        - Book Chapters
+    patch:
+      summary: Update book chapter content
+      description: ''
+      parameters: []
+      operationId: updateChapterByChapterId
+      responses:
+        default:
+          description: Default response
+      tags:
+        - Book Chapters
+  /chapter/:
+    post:
+      summary: Post a new chapter
+      description: A new book chapter to be posted
+      parameters: []
+      operationId: postNewChapter
+      responses:
+        default:
+          description: Default response
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                bookGroup:
+                  type: integer
+                chapterNumber:
+                  type: number
+                type:
+                  type: string
+                textContent:
+                  type: string
+                images:
+                  type: array
+                  items:
+                    type: string
+      tags:
+        - Book Chapters
+  '/comments/{bookId}/{chapterId}':
+    get:
+      summary: Get comments from a book chapter
+      description: ''
+      parameters: []
+      operationId: getCommentsByChapterId
+      responses:
+        '200':
+          description: Default response
+          content:
+            application/json:
+              schema: {}
+      tags:
+        - Book Comments
+      security: []
+    post:
+      summary: Post comment to a book chapter
+      description: ''
+      parameters: []
+      operationId: postCommentByChapterId
+      responses:
+        default:
+          description: Default response
+      tags:
+        - Book Comments
+  '/comments/{bookId}':
+    get:
+      summary: Get comments from a book group
+      description: >-
+        Contains all comments from chapters in this group and all chapter
+        unspecified comments
+      parameters: []
+      operationId: getCommentsByBookGroupId
+      responses:
+        default:
+          description: Default response
+      tags:
+        - Book Comments
+    post:
+      summary: Post comment in book group
+      description: Create a comment that isn't chapter specific
+      parameters: []
+      operationId: postCommentByBookGroupId
+      responses:
+        default:
+          description: Default response
+      tags:
+        - Book Comments
+  /comments:
+    delete:
+      summary: Delete a book comment
+      description: Doesn't need a specific book group. Id is global among all groups
+      parameters: []
+      operationId: deleteCommentById
+      responses:
+        default:
+          description: Default response
+      tags:
+        - Book Comments
+    patch:
+      summary: Delete a book comment
+      description: Doesn't need a specific book group. Id is global among all groups
+      parameters: []
+      operationId: updateCommentById
+      responses:
+        default:
+          description: Default response
+      tags:
+        - Book Comments
 tags:
   - name: Users
     description: For all user related operations.
@@ -141,6 +290,12 @@ tags:
     description: Representing folders for book chapters (can also be called book titles).
   - name: Book Chapters
     description: May hold hypertext content or images
+  - name: Book Comments
+    description: User comments on book groups or book chapters
+  - name: Book Authors
+    description: People who write books (one book may have multiple authors)
+  - name: Book Covers
+    description: Galleries of cover arts for books. (Choose one to display as thumbnail)
 components:
   securitySchemes:
     bearerAuth:
