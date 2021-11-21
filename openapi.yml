@@ -1,12 +1,15 @@
-openapi: '3.0.2'
+openapi: 3.0.2
 info:
   title: Novo App
   version: '1.0'
-  description: A book server that serves all kinds of books (novels, comics, manga and whatnots)
+  description: >-
+    A book server that serves all kinds of books (novels, comics, manga and
+    whatnots)
+  contact: {}
 servers:
-  - url: http://localhost:7001
+  - url: 'http://localhost:7001'
 paths:
-  /oauth/{provider}:
+  '/oauth/{provider}':
     get:
       summary: OAuth login initialize
       description: Redirects client to OAuth provider page for 3-legged authentication.
@@ -16,7 +19,8 @@ paths:
         '404':
           description: Provider not found
       tags:
-      - "Users"
+        - Users
+      parameters: []
   /login:
     post:
       summary: Password login
@@ -37,10 +41,13 @@ paths:
         '401':
           description: Invalid credentials
       tags:
-        - "Users"
+        - Users
+      parameters: []
     get:
       summary: Oauth login
-      description: Client goes to this page after having received the oauth code from provider (Google)
+      description: >-
+        Client goes to this page after having received the oauth code from
+        provider (Google)
       parameters:
         - name: provider
           in: path
@@ -51,7 +58,9 @@ paths:
         - name: code
           in: path
           required: true
-          description: Code received after client successfully verified by the oauth provider side.
+          description: >-
+            Code received after client successfully verified by the oauth
+            provider side.
           schema:
             type: string
       responses:
@@ -60,8 +69,8 @@ paths:
         '401':
           description: Invalid credentials
       tags:
-        - "Users"
-  /search-suggest/{query}:
+        - Users
+  '/search-suggest/{query}':
     get:
       summary: Search suggestion
       description: Suggestion when typing text in the search box.
@@ -73,7 +82,7 @@ paths:
             type: string
       responses:
         '200':
-          description: "Returning 200 even when list returned is empty"
+          description: Empty list returns 200 also
           content:
             application/json:
               schema:
@@ -81,14 +90,50 @@ paths:
                 properties:
                   list:
                     type: array
-                  
-              
-
-
-
-
-
-
+                    items:
+                      type: object
+                      properties:
+                        thumbnail:
+                          type: string
+                        title:
+                          type: string
+      tags:
+        - Book Groups
+  '/search/{query}':
+    get:
+      summary: Search result
+      description: Search result from query.
+      parameters:
+        - name: query
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Empty list also returns 200 
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  list:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        thumbnail:
+                          type: string
+                          example: ./img/test.png
+                        title:
+                          type: string
+                          example: Boku no pico
+      tags:
+        - Book Groups
 tags:
   - name: Users
     description: For all user related operations.
@@ -96,12 +141,14 @@ tags:
     description: Representing folders for book chapters (can also be called book titles).
   - name: Book Chapters
     description: May hold hypertext content or images
-
 components:
   securitySchemes:
-    bearerAuth:            # arbitrary name for the security scheme
+    bearerAuth:
       type: http
       scheme: bearer
-      bearerFormat: JWT    # optional, arbitrary value for documentation purposes
+      bearerFormat: JWT
+  links: {}
+  callbacks: {}
+  schemas: {}
 security:
-  - bearerAuth: []         # use the same name as above
+  - bearerAuth: []
