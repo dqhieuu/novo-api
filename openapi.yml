@@ -22,9 +22,12 @@ paths:
         - Users
       parameters: []
       operationId: goToOauthProvider
+      security: []
+      
   /login:
     post:
       summary: Password login
+      security: []
       requestBody:
         required: true
         content:
@@ -80,6 +83,64 @@ paths:
       tags:
         - Users
       operationId: loginByPassword
+  /book:
+    post:
+      summary: Create a new book group
+      description: Create a new book group by json request body.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - description
+              properties:
+                name:
+                  type: string
+                  example: One punch Man
+                  description: The name of this book group
+                description:
+                  type: string
+                  example: The story of a hero named Saitama.
+                authors:
+                  type: array
+                  example: [123, 124, 125]
+                  description: Author IDs from the database
+                  items: 
+                    type: integer
+                cover_arts:
+                  type: array
+                  example: [123, 124, 125]
+                  description: Image IDs from the database. The first will be selected as the cover thumbnail.
+                  items: 
+                    type: integer
+      responses:
+        200:
+          description: Created a new book group successfully
+        403:
+          description: User not authorized
+      tags: [Book Groups]
+  /book/{bookGroupId}:
+    delete:
+      summary: Delete a book group
+      description: Delete a book group by its id. Will delete all containing book chapters.
+      parameters:
+        - name: bookGroupId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Deleted OK
+        403:
+          description: User not authorized
+        404:
+          description: Book group not found
+      tags:
+        - Book Groups
+
   '/search-suggest/{query}':
     get:
       summary: Search suggestion
@@ -95,7 +156,7 @@ paths:
 
       responses:
         '200':
-          description: Empty list also returns 200
+          description: A list of book may contain 0 elements
           content:
             application/json:
               schema:
@@ -287,8 +348,8 @@ paths:
       parameters: []
       operationId: postNewChapter
       responses:
-        default:
-          description: Default response
+        301:
+          description: New chapter created. Redirect to the chapter
       requestBody:
         required: true
         content:
@@ -342,24 +403,60 @@ paths:
     get:
       summary: Get like count of a book group
       description: This gets the like and dislike count of a book group
-      parameters: []
+      parameters:
+        - name: bookGroupId
+          in: path
+          required: true
+          schema:
+            type: integer
       operationId: getLikeAndDislikeCountByBookGroupId
       responses:
-        default:
-          description: Default response
+        200:
+          description: Successful get
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - like_count
+                  - dislike_count
+                properties:
+                  like_count:
+                    type: integer
+                    example: 3
+                  dislike_count:
+                    type: integer
+                    example: 0
+        404:
+          description: Book group not found
+
+
       tags:
         - Book Groups
+  '/like/{bookGroupId}/{operation}':
     post:
       summary: Like operations on a book group
       description: Like/dislike/or unlike operation by a user for a book group
-      parameters: []
+      parameters:
+        - name: bookGroupId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: operation
+          in: path
+          required: true
+          schema:
+            enum: [like, dislike, unlike]
+            example: like
+            type: string
       operationId: likeOperationsForBookGroup
       responses:
         default:
           description: Default response
       tags:
         - Book Groups
-  '/comments/{bookId}':
+  /comments/{bookId}:
     get:
       summary: Get comments from a book group
       description: >-
@@ -368,8 +465,9 @@ paths:
       parameters: []
       operationId: getCommentsByBookGroupId
       responses:
-        default:
-          description: Default response
+        200:
+          description: OK
+
       tags:
         - Book Comments
     post:
@@ -428,17 +526,6 @@ paths:
           description: Default response
       tags:
         - Book Comments
-  '/user/{userId}':
-    get:
-      summary: Get public user info
-      description: 'Get public user info (i.e., username, books posted, profile, avatar )'
-      parameters: []
-      operationId: getUserInfoById
-      responses:
-        default:
-          description: Default response
-      tags:
-        - Users
   /register:
     post:
       summary: Register a new user (password)
@@ -471,48 +558,6 @@ paths:
               required: [username, email, password]
       tags:
         - Users
-  '/author/{authorId}':
-    get:
-      summary: Get an author page
-      description: 'A complete author page, with books from author'
-      parameters: []
-      operationId: getAuthorById
-      responses:
-        default:
-          description: Default response
-      tags:
-        - Book Authors
-    patch:
-      summary: Update an author
-      description: 'Update author biography, name, aliases'
-      parameters: []
-      operationId: updateAuthorById
-      responses:
-        default:
-          description: Default response
-      tags:
-        - Book Authors
-    delete:
-      summary: Delete an author
-      description: Delete an author by id
-      parameters: []
-      operationId: deleteAuthorById
-      responses:
-        default:
-          description: Default response
-      tags:
-        - Book Authors
-  '/author':
-    post:
-      summary: Create a new author
-      description: 'A complete author page, with books from author'
-      parameters: []
-      operationId: createAuthor
-      responses:
-        default:
-          description: Default response
-      tags:
-        - Book Authors
   /complete-oauth-register:
     post:
       summary: Complete OAuth registration
@@ -522,19 +567,190 @@ paths:
       parameters: []
       operationId: completeOauthRegister
       responses:
-        default:
-          description: Default response
+        200:
+          description: OAuth user account officially created
       requestBody:
-        required: false
+        required: true
         content:
           application/json:
             schema:
               type: object
+              required:
+                - username
               properties:
                 username:
                   $ref: '#/components/schemas/Username'
+                avatar:
+                  type: integer
+                  description: An image id from the database
       tags:
         - Users
+  '/user/{userId}':
+    get:
+      summary: Get public user info
+      description: 'Get public user info (i.e., username, books posted, profile, avatar )'
+      parameters: []
+      operationId: getUserInfoById
+      responses:
+        200:
+          description: Found user
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - name
+                  - role
+                  - books_posted
+                properties:
+                  name:
+                    type: string
+                    example: Người dùng ABC
+                  role:
+                    $ref: '#/components/schemas/UserRole'
+                  avatar:
+                    type: string
+                    description: Url of avatar
+                  description:
+                    type: string
+                    example: Mô tả người dùng...
+                  books_posted:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BookItem'
+      tags:
+        - Users
+  '/author/{authorId}':
+    get:
+      summary: Get an author page
+      description: 'A complete author page, with books from author'
+      parameters:
+        - name: authorId
+          in: path
+          required: true
+          schema:
+            type: integer
+      operationId: getAuthorById
+      responses:
+        200:
+          description: Successful request
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - name
+                properties:
+                  name:
+                    type: string
+                    example: George R.R. Washington
+                  description:
+                    type: string
+                    example: A novelist who wrote the script for the famous movie, The Ring.
+                  avatar:
+                    type: string
+                    description: The url of his avatar. Large-sized.
+                  books:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BookItem'
+
+        403:
+          description: User not authorized
+        404:
+          description: Author not found
+                  
+
+      tags:
+        - Book Authors
+    patch:
+      summary: Update an author
+      description: 'Update author biography, name, aliases'
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                description:
+                  type: string
+                  example: Some modified author description.
+                avatar:
+                  type: integer
+                  description: The image id in the database.
+      operationId: updateAuthorById
+      responses:
+        200:
+          description: Updated successfully
+        403:
+          description: User not authorized
+        404:
+          description: Author not found
+        409:
+          description: Conflict when updating author
+      tags:
+        - Book Authors
+    delete:
+      summary: Delete an author
+      description: Delete an author by id
+      parameters:
+        - name: authorId
+          in: path
+          required: true
+          schema:
+            type: integer
+
+      operationId: deleteAuthorById
+      responses:
+        200:
+          description: Deleted successfully
+        403:
+          description: User not authorized
+        404:
+          description: Author not found
+        
+      tags:
+        - Book Authors
+  '/author':
+    post:
+      summary: Create a new author
+      description: 'A complete author page, with books from author'
+      parameters: []
+      operationId: createAuthor
+      responses:
+        200:
+          description: Created successfully
+        403:
+          description: User not authorized
+        409:
+          description: Author already exists
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  maxLength: 30
+                  example: Aldous Huxley
+                description:
+                  type: string
+                  maxLength: 500
+                  example: Something about his biography.
+                avatarId:
+                  description: The image id in the database
+                  type: integer
+                  example: 10533
+                  
+      tags:
+        - Book Authors
 tags:
   - name: Users
     description: For all user related operations.
@@ -546,12 +762,14 @@ tags:
     description: User comments on book groups or book chapters
   - name: Book Authors
     description: People who write books (one book may have multiple authors)
+  - name: Images 
+    description: Functions for uploading, querying image
 components:
   securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: jwt
   links: {}
   callbacks: {}
   schemas:
@@ -565,6 +783,39 @@ components:
       minLength: 8
       maxLength: 50
       example: t3stPAS!dảk
+    UserRole:
+      type: string
+      example: member
+      enum: [member, moderator, admin]
+    RolePermissions:
+      type: array
+      example: [comment.read, author.read]
+      enum: [comment.read, comment.post, comment.modify, 
+        comment.modifySelf, comment.deleteSelf, comment.delete,
+        book.read, book.post, book.modifySelf, 
+        book.modify, book.deleteSelf, book.delete,
+        chapter.read, chapter.post, chapter.modifySelf, 
+        chapter.modify, chapter.deleteSelf, chapter.delete
+        author.read, author.post, author.modify, author.delete
+        user.readSelf, user.read, userPrivate.read
+        ]
+    BookItem:
+      type: object
+      required:
+        - title
+        - url
+        - thumbnail
+      properties:
+        title:
+          type: string
+          example: TLOTR
+        url:
+          type: string
+          example: /chapter/10003
+        thumbnail:
+          description: The url of the book thumbnail. Middle-sized.
+          type: string
+          example: /image/book/s/25-232321-1231.jpg
 
 security:
-  - bearerAuth: []
+  - cookieAuth: []
