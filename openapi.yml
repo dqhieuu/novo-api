@@ -34,7 +34,7 @@ paths:
           application/json:
             schema:
               type: object
-              required: [username, password]
+              required: [usernameOrEmail, password]
               properties:
                 usernameOrEmail:
                   type: string
@@ -50,9 +50,10 @@ paths:
       tags:
         - Users
       parameters: []
-      operationId: loginByOauthCode
+      operationId: loginByOAuthCode
     get:
-      summary: Oauth login
+      summary: OAuth login
+      security: []
       description: >
         Client goes to this page after having received the oauth code from
         provider (Google). It's performed automatically.
@@ -109,7 +110,7 @@ paths:
                   description: Author IDs from the database
                   items: 
                     type: integer
-                cover_arts:
+                coverArts:
                   type: array
                   example: [123, 124, 125]
                   description: Image IDs from the database. The first will be selected as the cover thumbnail.
@@ -122,6 +123,85 @@ paths:
           description: User not authorized
       tags: [Book Groups]
   /book/{bookGroupId}:
+    get:
+      summary: Get book group page content
+      description: Create a new book group by json request body.
+      tags:
+        - Book Groups
+        
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: One punch Man
+                    description: The name of this book group
+                  description:
+                    type: string
+                    example: The story of a hero named Saitama.
+                  authors:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                        - name
+                        - url
+                      properties:
+                        name:
+                          type: string
+                          example: Nguyễn Nhật Ánh
+                        url:
+                          type: string
+                          example: /author/123124
+                  chapters:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        chapterNumber:
+                          type: number
+                          example: 12.1
+                        description:
+                          type: string
+                          example: This chapter title or something
+                        url:
+                          type: string
+                          example: /chapter/12312
+
+                  coverArts:
+                    type: array
+                    items: 
+                      type: object
+                      required:
+                        - thumbnail
+                        - originalImage
+                      properties:
+                        thumbnail:
+                          type: string
+                          example: /image/author-s/a1241-4a43-4a.jpg
+                        originalImage:
+                          type: string
+                          example: /image/author/515-133-22.jpg
+                  primaryCoverArt:
+                      type: object
+                      required:
+                        - thumbnail
+                        - originalImage
+                      properties:
+                        thumbnail:
+                          type: string
+                          example: /image/author-s/a1241-4a43-4a.jpg
+                        originalImage:
+                          type: string
+                          example: /image/author/515-133-22.jpg
+
+        404:
+          description: Book group not found
     delete:
       summary: Delete a book group
       description: Delete a book group by its id. Will delete all containing book chapters.
@@ -153,7 +233,7 @@ paths:
             type: string
             example: solo lev
             maxLength: 100
-
+      security: []
       responses:
         '200':
           description: A list of book may contain 0 elements
@@ -195,13 +275,9 @@ paths:
             type: string
             example: solo leveling
         - name: page
-          in: query
-          required: false
-          schema:
-            type: integer
-            default: 1
-          description: May clamp to first/last page for better ux (page <= 0, page = 9999)
+          $ref: '#/components/parameters/Page'
       operationId: getSearchResult
+      security: []
       responses:
         200:
           description: Query success
@@ -211,9 +287,7 @@ paths:
                 type: object
                 properties:
                   lastPage:
-                    type: integer
-                    description: The last page number for pagination purposes
-                    example: 15
+                    $ref: '#/components/schemas/LastPage'
                   books:
                     type: array
                     description: Books in a dedicated search page
@@ -312,35 +386,6 @@ paths:
       security: []
       tags:
         - Book Chapters
-    delete:
-      summary: Delete a book chapter
-      description: ''
-      parameters:
-        - name: chapterId
-          in: path
-          schema:
-            type: number
-          required: true
-      operationId: deleteChapterByChapterId
-      responses:
-        '200':
-          description: Deleted successfully
-        '403':
-          description: Forbidden
-        '404':
-          description: Can't find book chapter
-      tags:
-        - Book Chapters
-    # patch:
-    #   summary: Update book chapter content
-    #   description: ''
-    #   parameters: []
-    #   operationId: updateChapterByChapterId
-    #   responses:
-    #     default:
-    #       description: Default response
-    #   tags:
-    #     - Book Chapters
   /chapter/:
     post:
       summary: Post a new chapter
@@ -399,6 +444,35 @@ paths:
                         type: integer
       tags:
         - Book Chapters
+    delete:
+      summary: Delete a book chapter
+      description: ''
+      parameters:
+        - name: chapterId
+          in: path
+          schema:
+            type: number
+          required: true
+      operationId: deleteChapterByChapterId
+      responses:
+        '200':
+          description: Deleted successfully
+        '403':
+          description: User not authorized
+        '404':
+          description: Book chapter not found
+      tags:
+        - Book Chapters
+    # patch:
+    #   summary: Update book chapter content
+    #   description: ''
+    #   parameters: []
+    #   operationId: updateChapterByChapterId
+    #   responses:
+    #     default:
+    #       description: Default response
+    #   tags:
+    #     - Book Chapters
   '/like/{bookGroupId}':
     get:
       summary: Get like count of a book group
@@ -409,6 +483,7 @@ paths:
           required: true
           schema:
             type: integer
+      security: []
       operationId: getLikeAndDislikeCountByBookGroupId
       responses:
         200:
@@ -418,13 +493,13 @@ paths:
               schema:
                 type: object
                 required:
-                  - like_count
-                  - dislike_count
+                  - likeCount
+                  - dislikeCount
                 properties:
-                  like_count:
+                  likeCount:
                     type: integer
                     example: 3
-                  dislike_count:
+                  dislikeCount:
                     type: integer
                     example: 0
         404:
@@ -433,7 +508,7 @@ paths:
 
       tags:
         - Book Groups
-  '/like/{bookGroupId}/{operation}':
+  /like/{bookGroupId}/{operation}:
     post:
       summary: Like operations on a book group
       description: Like/dislike/or unlike operation by a user for a book group
@@ -452,78 +527,143 @@ paths:
             type: string
       operationId: likeOperationsForBookGroup
       responses:
-        default:
-          description: Default response
+        200:
+          description: OK
+        403:
+          description: User not authorized
+        404:
+          description: Book group not found
       tags:
         - Book Groups
-  /comments/{bookId}:
+  /comment:
     get:
-      summary: Get comments from a book group
+      summary: Get comments from a book group/chapter
       description: >-
-        Contains all comments from chapters in this group and all chapter
-        unspecified comments
-      parameters: []
-      operationId: getCommentsByBookGroupId
+        Contains all comments from chapters in this group and comments not in any chapter (book-group scope comments)
+      parameters:
+        - $ref: '#/components/parameters/BookGroupId'
+        - $ref: '#/components/parameters/BookChapterId'
+        - $ref: '#/components/parameters/Page'
+      operationId: getCommentsByBookGroupOrChapterId
       responses:
         200:
           description: OK
-
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - likeCount
+                  - dislikeCount
+                properties:
+                  lastPage:
+                    $ref: '#/components/schemas/LastPage'
+                  comments:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        comment:
+                          description: Content of a comment
+                          type: string
+                          example: Bình luận gì đó...
+                        userName:
+                          type: string
+                        userProfile:
+                          type: string
+                          description: Url to user's profile
+                          example: http://eg.net/sites/1/profile/244
+                        userAvatar:
+                          type: string
+                          description: Url of user's avatar (small thumbnail)
+                          example: http://st.imageinstant.net/data/sites/1/useravatars/282930.jpg
+                        timePosted:
+                          description: Timestamp of comment when created
+                          type: integer
+                          example: 1231111111
+        404:
+          description: Book group/chapter not found
       tags:
         - Book Comments
     post:
-      summary: Post a comment in a book group
+      summary: Post a comment in a book group/chapter
       description: Create a comment that isn't chapter specific
-      parameters: []
+      parameters:
+        - $ref: '#/components/parameters/BookGroupId'
+        - $ref: '#/components/parameters/BookChapterId'
       operationId: postCommentByBookGroupId
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - comment
+              properties:
+                comment:
+                  type: string
+                  description: The content of the comment to be posted. 
+                  example: Test thử comment cái
       responses:
-        default:
-          description: Default response
+        '200':
+          description: Posted successfully
+        '403':
+          description: User not authorized
+        '404':
+          description: Book group/chapter not found
       tags:
         - Book Comments
-  /comments:
+  /comment/${commentId}:
     delete:
       summary: Delete a book comment
-      description: Doesn't need a specific book group. Id is global among all groups
-      parameters: []
+      description: Delete a comment by its id
+      parameters:
+        - name: commentId
+          in: path
+          required: true
+          schema:
+            type: integer
       operationId: deleteCommentById
       responses:
-        default:
-          description: Default response
+        '200':
+          description: Deleted successfully
+        '403':
+          description: User not authorized
+        '404':
+          description: Could't find comment
       tags:
         - Book Comments
     patch:
       summary: Update a book comment
-      description: Doesn't need a specific book group. Id is global among all groups
-      parameters: []
+      description: Update a comment by its id
+      parameters:
+        - name: commentId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - comment
+              properties:
+                comment:
+                  type: string
+                  description: The modified comment content. 
+                  example: Cập nhật comment
       operationId: updateCommentById
       responses:
-        default:
-          description: Default response
-      tags:
-        - Book Comments
-  '/comment/{bookGroupId}':
-    get:
-      summary: Get comments from a book chapter
-      description: ''
-      parameters: []
-      operationId: getCommentsByChapterId
-      responses:
         '200':
-          description: Default response
-          content:
-            application/json:
-              schema: {}
-      tags:
-        - Book Comments
-      security: []
-    post:
-      summary: Post a comment to a book chapter
-      description: ''
-      parameters: []
-      operationId: postCommentByChapterId
-      responses:
-        default:
-          description: Default response
+          description: Updated successfully
+        '403':
+          description: User not authorized
+        '404':
+          description: Could't find comment
       tags:
         - Book Comments
   /register:
@@ -533,9 +673,12 @@ paths:
         is that user signs up/logs in with their account from an OAuth provider.
       parameters: []
       operationId: registerANewUser
+      security: []
       responses:
-        default:
-          description: Default response
+        200:
+          description: Created successfully
+        422:
+          description: Invalid user data
       requestBody:
         required: true
         content:
@@ -545,12 +688,12 @@ paths:
               properties:
                 username:
                   type: string
-                  description: Must be at least 6 characters, not starting with a space, may contain at most 1 white spaces between characters, may contain special characters except control characters and line break characters. 
+                  description: Must be at least 6 characters, not starting with a space, may contain at most 1 white space between characters, may contain special characters except control characters and line break characters
                   example: Người dùng W1B00 ／人 ◕ ‿‿ ◕ 人＼
                 email:
                   type: string
                   example: example@example.com
-                  description: Standards compliant.
+                  description: Standards compliant
                 password:
                   type: string
                   description: Must be at least 8 characters
@@ -561,8 +704,8 @@ paths:
   /complete-oauth-register:
     post:
       summary: Complete OAuth registration
-      description: >-
-        User type in the username and maybe change their default profile picture
+      description:
+        User types in their username and maybe changes their default profile picture
         to complete registration
       parameters: []
       operationId: completeOauthRegister
@@ -587,9 +730,15 @@ paths:
         - Users
   '/user/{userId}':
     get:
-      summary: Get public user info
-      description: 'Get public user info (i.e., username, books posted, profile, avatar )'
-      parameters: []
+      summary: Get public user info page
+      description: Get public user info to be displayed in user page (i.e., username, books posted, profile, avatar )
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      security: []
       operationId: getUserInfoById
       responses:
         200:
@@ -601,7 +750,7 @@ paths:
                 required:
                   - name
                   - role
-                  - books_posted
+                  - booksPosted
                 properties:
                   name:
                     type: string
@@ -614,12 +763,73 @@ paths:
                   description:
                     type: string
                     example: Mô tả người dùng...
-                  books_posted:
+                  booksPosted:
                     type: array
                     items:
                       $ref: '#/components/schemas/BookItem'
       tags:
         - Users
+  '/role':
+    get:
+      summary: Get my role permissions
+      description: Get role permissions, even if user is not logged in
+      parameters: []
+      security: []
+      operationId: getMyRolePermissions
+      responses:
+        200:
+          description: Role list
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - role
+                  - permissions
+                properties:
+                  role:
+                    $ref: '#/components/schemas/UserRole'
+                  permissions:
+                    $ref: '#/components/schemas/RolePermissions'
+      tags:
+        - Users
+  '/author':
+    post:
+      summary: Create a new author
+      description: 'A complete author page, with books from author'
+      parameters: []
+      operationId: createAuthor
+      responses:
+        200:
+          description: Created successfully
+        403:
+          description: User not authorized
+        409:
+          description: Author already exists
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  maxLength: 30
+                  example: Aldous Huxley
+                description:
+                  type: string
+                  maxLength: 500
+                  example: Something about his biography.
+                avatarId:
+                  description: The image id in the database
+                  type: integer
+                  example: 10533
+                  
+      tags:
+        - Book Authors
   '/author/{authorId}':
     get:
       summary: Get an author page
@@ -714,43 +924,42 @@ paths:
         
       tags:
         - Book Authors
-  '/author':
+  /upload/{imageType}:
     post:
-      summary: Create a new author
-      description: 'A complete author page, with books from author'
-      parameters: []
-      operationId: createAuthor
+      summary: Upload a new image
+      description: Upload a new image, can be a user avatar / author avatar / chapter image content / cover art
+      parameters:
+        - name: imageType
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - chapter-image
+              - user-avatar
+              - author-avatar
+              - cover-art
+      operationId: uploadImage
       responses:
         200:
-          description: Created successfully
+          description: Uploaded successfully
+          content:
+            text/plain:
+              schema:
+                type: integer
+                example: 1231
+
         403:
           description: User not authorized
-        409:
-          description: Author already exists
       requestBody:
         required: true
         content:
-          application/json:
+          image/{png|jpg|gif}:
             schema:
-              type: object
-              required:
-                - name
-              properties:
-                name:
-                  type: string
-                  maxLength: 30
-                  example: Aldous Huxley
-                description:
-                  type: string
-                  maxLength: 500
-                  example: Something about his biography.
-                avatarId:
-                  description: The image id in the database
-                  type: integer
-                  example: 10533
-                  
+              type: string
+              format: binary
       tags:
-        - Book Authors
+        - Images
 tags:
   - name: Users
     description: For all user related operations.
@@ -772,6 +981,29 @@ components:
       name: jwt
   links: {}
   callbacks: {}
+  parameters:
+    Page:
+      name: page
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 1
+      description: May clamp to first/last page for better ux (page <= 0, page = 9999)
+    BookGroupId:
+      name: bookGroupId
+      in: query
+      description: If included, ``bookChapterId`` is not requied.
+      required: true
+      schema:
+        type: integer
+    BookChapterId:
+      name: bookChapterId
+      in: query
+      description: If included, ``bookGroupId`` is not requied.
+      required: true
+      schema:
+        type: integer
   schemas:
     Username:
       type: string
@@ -790,6 +1022,7 @@ components:
     RolePermissions:
       type: array
       example: [comment.read, author.read]
+      description: Front-end should implement view display strategy according to these enums.
       enum: [comment.read, comment.post, comment.modify, 
         comment.modifySelf, comment.deleteSelf, comment.delete,
         book.read, book.post, book.modifySelf, 
@@ -816,6 +1049,11 @@ components:
           description: The url of the book thumbnail. Middle-sized.
           type: string
           example: /image/book/s/25-232321-1231.jpg
+    LastPage:
+      type: integer
+      description: The last page number for pagination purposes
+      example: 15
+
 
 security:
   - cookieAuth: []
