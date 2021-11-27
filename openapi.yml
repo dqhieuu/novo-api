@@ -20,11 +20,50 @@ paths:
           description: Provider not found
       tags:
         - Users
-      parameters: []
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          description: The provider of the OAuth service.
+          schema:
+            $ref: '#/components/schemas/OauthProvider'
       operationId: goToOauthProvider
       security: []
       
   /login:
+    get:
+      summary: OAuth login
+      security: []
+      description: >
+        Client goes to this page after having received the oauth code from
+        provider (Google). It's performed automatically.
+      parameters:
+        - name: provider
+          in: query
+          required: true
+          description: The provider of the OAuth service.
+          schema:
+            type: string
+            enum:
+              - google
+        - name: code
+          in: query
+          required: true
+          description: >
+            Code received after the client has successfully been verified by the OAuth
+            provider side. (Embedded in the redirect link)
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Login success
+        '401':
+          description: Invalid credentials
+        '404':
+          description: Provider not found
+      tags:
+        - Users
+      operationId: loginByPassword
     post:
       summary: Password login
       security: []
@@ -51,39 +90,6 @@ paths:
         - Users
       parameters: []
       operationId: loginByOAuthCode
-    get:
-      summary: OAuth login
-      security: []
-      description: >
-        Client goes to this page after having received the oauth code from
-        provider (Google). It's performed automatically.
-      parameters:
-        - name: provider
-          in: path
-          required: true
-          description: The provider of the OAuth service.
-          schema:
-            type: string
-            enum:
-              - google
-        - name: code
-          in: path
-          required: true
-          description: >
-            Code received after the client has successfully been verified by the OAuth
-            provider side. (Embedded in the redirect link)
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Login success
-        '401':
-          description: Invalid credentials
-        '404':
-          description: Provider not found
-      tags:
-        - Users
-      operationId: loginByPassword
   /book:
     post:
       summary: Create a new book group
@@ -614,7 +620,7 @@ paths:
           description: Book group/chapter not found
       tags:
         - Book Comments
-  /comment/${commentId}:
+  /auth/comment/${commentId}:
     delete:
       summary: Delete a book comment
       description: Delete a comment by its id
@@ -701,7 +707,7 @@ paths:
               required: [username, email, password]
       tags:
         - Users
-  /complete-oauth-register:
+  /auth/complete-oauth-register:
     post:
       summary: Complete OAuth registration
       description:
@@ -728,7 +734,7 @@ paths:
                   description: An image id from the database
       tags:
         - Users
-  '/user/{userId}':
+  /user/{userId}:
     get:
       summary: Get public user info page
       description: Get public user info to be displayed in user page (i.e., username, books posted, profile, avatar )
@@ -769,12 +775,11 @@ paths:
                       $ref: '#/components/schemas/BookItem'
       tags:
         - Users
-  '/role':
+  /auth/role:
     get:
       summary: Get my role permissions
       description: Get role permissions, even if user is not logged in
       parameters: []
-      security: []
       operationId: getMyRolePermissions
       responses:
         200:
@@ -793,7 +798,7 @@ paths:
                     $ref: '#/components/schemas/RolePermissions'
       tags:
         - Users
-  '/author':
+  /auth/author:
     post:
       summary: Create a new author
       description: 'A complete author page, with books from author'
@@ -830,7 +835,7 @@ paths:
                   
       tags:
         - Book Authors
-  '/author/{authorId}':
+  /author/{authorId}:
     get:
       summary: Get an author page
       description: 'A complete author page, with books from author'
@@ -859,6 +864,7 @@ paths:
                     example: A novelist who wrote the script for the famous movie, The Ring.
                   avatar:
                     type: string
+                    example: image/author-avatar/123124.jpg
                     description: The url of his avatar. Large-sized.
                   books:
                     type: array
@@ -869,10 +875,10 @@ paths:
           description: User not authorized
         404:
           description: Author not found
-                  
 
       tags:
         - Book Authors
+  /auth/author/{authorId}:
     patch:
       summary: Update an author
       description: 'Update author biography, name, aliases'
@@ -882,9 +888,10 @@ paths:
           application/json:
             schema:
               type: object
-              required:
-                - name
               properties:
+                name:
+                  type: string
+                  example: New author name
                 description:
                   type: string
                   example: Some modified author description.
@@ -924,7 +931,7 @@ paths:
         
       tags:
         - Book Authors
-  /upload/{imageType}:
+  /auth/upload/{imageType}:
     post:
       summary: Upload a new image
       description: Upload a new image, can be a user avatar / author avatar / chapter image content / cover art
@@ -947,6 +954,7 @@ paths:
             text/plain:
               schema:
                 type: integer
+                description: The image id from the database
                 example: 1231
 
         403:
@@ -958,6 +966,31 @@ paths:
             schema:
               type: string
               format: binary
+      tags:
+        - Images
+  /image/{path}:
+    get:
+      summary: Get image from server
+      description: Get image from server disk, with given location. (technically, `/image/{path}` should point to `/static/images/{path}` in disk)
+      parameters:
+        - name: imageType
+          in: path
+          required: true
+          schema:
+            type: string
+            example: cover-art/9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d.jpg
+      operationId: getImage
+      security: []
+      responses:
+        200:
+          description: OK
+          content:
+            image:
+              schema:
+                type: string
+                format: binary
+        404:
+          description: Image not found
       tags:
         - Images
 tags:
@@ -1005,6 +1038,10 @@ components:
       schema:
         type: integer
   schemas:
+    OauthProvider:
+      type: string
+      enum:
+        - google
     Username:
       type: string
       minLength: 6
@@ -1018,7 +1055,7 @@ components:
     UserRole:
       type: string
       example: member
-      enum: [member, moderator, admin]
+      enum: [oauth_incomplete, member, moderator, admin]
     RolePermissions:
       type: array
       example: [comment.read, author.read]
