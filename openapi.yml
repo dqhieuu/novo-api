@@ -814,6 +814,16 @@ paths:
       responses:
         200:
           description: Created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                description: The author id after inserting from the database
+                properties:
+                  id:
+                    type: integer
+                    example: 1231
+
         403:
           description: User not authorized
         409:
@@ -890,7 +900,12 @@ paths:
     patch:
       summary: Update an author
       description: 'Update author biography, name, aliases'
-      parameters: []
+      parameters:
+        - name: authorId
+          in: path
+          required: true
+          schema:
+            type: integer
       requestBody:
         content:
           application/json:
