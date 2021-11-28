@@ -342,6 +342,10 @@ paths:
                     items:
                       type: object
                       properties:
+                        id:
+                          type: integer
+                          description: Book group id
+                          example: 1231
                         thumbnail:
                           description: A medium-sized thumbnail
                           type: string
@@ -1002,12 +1006,12 @@ paths:
         
       tags:
         - Book Authors
-  /auth/upload/{imageType}:
+  /auth/upload/{imageCategory}:
     post:
       summary: Upload a new image from file
       description: Upload a new image, can be a user avatar / author avatar / chapter image content / cover art
       parameters:
-        - name: imageType
+        - name: imageCategory
           in: path
           required: true
           schema:
@@ -1037,10 +1041,14 @@ paths:
       requestBody:
         required: true
         content:
-          image/{png|jpg|gif}:
+          multipart/form-data:
             schema:
-              type: string
-              format: binary
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+              
       tags:
         - Images
   /image/{path}:
@@ -1079,8 +1087,11 @@ tags:
     description: User comments on book groups or book chapters
   - name: Book Authors
     description: People who write books (one book may have multiple authors)
+  - name: Book Genres
+    description: Function for inserting, finding books group by genres.
   - name: Images 
     description: Functions for uploading, querying image
+
 components:
   securitySchemes:
     cookieAuth:
