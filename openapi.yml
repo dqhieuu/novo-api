@@ -173,6 +173,17 @@ paths:
                   description:
                     type: string
                     example: The story of a hero named Saitama.
+
+                  views:
+                    example: 1245
+                    type: integer
+                    description: Number of views from all chapters of this book. Being on this page doesn't count in the total views.
+                  likeCount:
+                    type: integer
+                    example: 3
+                  dislikeCount:
+                    type: integer
+                    example: 0
                   authors:
                     type: array
                     items:
@@ -403,6 +414,9 @@ paths:
                         description: A list of image urls
                         items:
                           type: string
+                      name:
+                        type: string
+                        example: A story of rain
                       nextChapter:
                         description: Id of the next book chapter
                         type: integer
@@ -428,6 +442,9 @@ paths:
                         type: string
                         example: Call me Ishmael. Some years ago...
                         description: The content for a text chapter (may contain markdown formattting)
+                      name:
+                        type: string
+                        example: A story of rain
                       nextChapter:
                         description: Id of the next book chapter
                         type: integer
@@ -475,6 +492,9 @@ paths:
                     bookGroupId:
                       type: integer
                       example: 25
+                    name:
+                      type: string
+                      example: A story of rain
                     chapterNumber:
                       type: number
                       example: 6.8
@@ -495,6 +515,9 @@ paths:
                     bookGroupId:
                       type: integer
                       example: 25
+                    name:
+                      type: string
+                      example: A story of rain
                     chapterNumber:
                       type: number
                       example: 6.8
@@ -1076,6 +1099,54 @@ paths:
           description: Image not found
       tags:
         - Images
+  /genre/all:
+    get:
+      summary: Get genre list from server
+      description: List all possible book genres
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: Lãng mạn
+                  id:
+                    type: integer
+                    example: 12341
+      tags:
+       - Book Genres
+  /genre/{genreId}:
+    get:
+      summary: Get book from genre list from server
+      description: List all possible book genres
+      parameters:
+        - name: genreId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: cover-art/9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d.jpg
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: Lãng mạn
+                  id:
+                    type: integer
+                    example: 12341
+      tags:
+       - Book Genres
+      
 tags:
   - name: Users
     description: For all user related operations.
