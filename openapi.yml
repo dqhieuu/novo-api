@@ -176,9 +176,10 @@ paths:
                         name:
                           type: string
                           example: Nguyễn Nhật Ánh
-                        url:
-                          type: string
-                          example: /author/123124
+                        id:
+                          type: integer
+                          description: Author id
+                          example: 1231
                   chapters:
                     type: array
                     items:
@@ -190,9 +191,10 @@ paths:
                         description:
                           type: string
                           example: This chapter title or something
-                        url:
-                          type: string
-                          example: /chapter/12312
+                        id:
+                          type: integer
+                          description: Chapter id
+                          example: 1231
 
                   coverArts:
                     type: array
@@ -272,15 +274,15 @@ paths:
                         thumbnail:
                           description: A small-sized thumbnail
                           type: string
-                          example: anh.jpg
+                          example: /image/cover-art/anh.jpg
                         title:
                           type: string
                           description: Book title
                           example: Boku no pico
-                        url:
-                          type: string
-                          description: Url to the chapter
-                          example: /chapter/1234
+                        id:
+                          type: integer
+                          description: Book group id
+                          example: 1231
                         latestChapter:
                           type: number
                           description: The highest number chapter
@@ -323,7 +325,7 @@ paths:
                         thumbnail:
                           description: A medium-sized thumbnail
                           type: string
-                          example: anh.jpg
+                          example: /image/cover-art/anh.jpg.256.jpg
                         title:
                           type: string
                           example: Boku no pico
@@ -378,11 +380,13 @@ paths:
                         items:
                           type: string
                       nextChapter:
-                        description: Url to the next chapter
-                        type: string
+                        description: Id of the next book chapter
+                        type: integer
+                        example: 1214
                       prevChapter:
-                        description: Url to the previous chapter
-                        type: string
+                        description: Id of the next book chapter
+                        type: integer
+                        example: 1211
                     required:
                       - type
                       - images
@@ -401,11 +405,13 @@ paths:
                         example: Call me Ishmael. Some years ago...
                         description: The content for a text chapter (may contain markdown formattting)
                       nextChapter:
-                        description: Url to the next chapter
-                        type: string
+                        description: Id of the next book chapter
+                        type: integer
+                        example: 1214
                       prevChapter:
-                        description: Url to the previous chapter
-                        type: string
+                        description: Id of the next book chapter
+                        type: integer
+                        example: 1211
         404:
           description: Chapter not found
       security: []
@@ -603,14 +609,14 @@ paths:
                           example: Bình luận gì đó...
                         userName:
                           type: string
-                        userProfile:
-                          type: string
-                          description: Url to user's profile
-                          example: http://eg.net/sites/1/profile/244
+                        id:
+                          type: integer
+                          description: Id of user profile
+                          example: 1231
                         userAvatar:
                           type: string
                           description: Url of user's avatar (small thumbnail)
-                          example: /avatar/2a82c91-12c-132131aba30.jpg
+                          example: /user-avatar/2a82c91-12c-132131aba30.jpg
                         timePosted:
                           description: Timestamp of comment when created
                           type: integer
@@ -1128,9 +1134,10 @@ components:
         title:
           type: string
           example: TLOTR
-        url:
-          type: string
-          example: /chapter/10003
+        id:
+          type: integer
+          description: The id of the book
+          example: 12311
         thumbnail:
           description: The url of the book thumbnail. Middle-sized.
           type: string
