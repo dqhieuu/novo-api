@@ -122,6 +122,14 @@ paths:
                   description: Image IDs from the database. The first will be selected as the cover thumbnail.
                   items: 
                     type: integer
+                genres:
+                  type: array
+                  description: Genre ids of this book.
+                  example: [2,3,5]
+                  items: 
+                    type: array
+                    items:
+                      type: integer
                 primaryCoverArt:
                   type: integer
                   example: 1234
@@ -180,6 +188,18 @@ paths:
                           type: integer
                           description: Author id
                           example: 1231
+                  genres:
+                    type: array
+                    description: Genre ids and names of this book.
+                    items: 
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1231
+                        name:
+                          type: string
+                          example: Tình cảm
                   chapters:
                     type: array
                     items:
