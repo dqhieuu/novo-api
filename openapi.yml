@@ -351,34 +351,8 @@ paths:
                     description: Books in a dedicated search page
                        have more information than when searching.
                     items:
-                      type: object
-                      properties:
-                        id:
-                          type: integer
-                          description: Book group id
-                          example: 1231
-                        thumbnail:
-                          description: A medium-sized thumbnail
-                          type: string
-                          example: /image/cover-art/anh.jpg.256.jpg
-                        title:
-                          type: string
-                          example: Boku no pico
-                        latestChapter:
-                          type: number
-                          example: 16.5
-                        comments:
-                          description: Number of comments
-                          type: integer
-                          example: 105
-                        views:
-                          description: Number of views
-                          type: integer
-                          example: 15324
-                        likes:
-                          description: The result of likes minus dislikes.
-                          type: integer
-                          example: 24
+                      $ref: '#/components/schemas/BookItemFull'
+
       tags:
         - Book Groups
   '/chapter/{chapterId}':
@@ -1109,20 +1083,22 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  name:
-                    type: string
-                    example: Lãng mạn
-                  id:
-                    type: integer
-                    example: 12341
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      example: Lãng mạn
+                    id:
+                      type: integer
+                      example: 5
       tags:
        - Book Genres
   /genre/{genreId}:
     get:
-      summary: Get book from genre list from server
-      description: List all possible book genres
+      summary: Get book list by genre 
+      description: List books from a genre with pagination
       parameters:
         - name: genreId
           in: path
@@ -1130,6 +1106,8 @@ paths:
           schema:
             type: string
             example: cover-art/9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d.jpg
+        - name: page
+          $ref: '#/components/parameters/Page'
       responses:
         200:
           description: OK
@@ -1138,12 +1116,16 @@ paths:
               schema:
                 type: object
                 properties:
-                  name:
-                    type: string
-                    example: Lãng mạn
-                  id:
-                    type: integer
-                    example: 12341
+                  lastPage:
+                    $ref: '#/components/schemas/LastPage'
+                  books:
+                    type: array
+                    description: Books in a dedicated search page
+                       have more information than when searching.
+                    items:
+                      $ref: '#/components/schemas/BookItemFull'
+        404:
+          description: Genre not found
       tags:
        - Book Genres
       
@@ -1248,6 +1230,35 @@ components:
       type: integer
       description: The last page number for pagination purposes
       example: 15
+    BookItemFull:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Book group id
+          example: 1231
+        thumbnail:
+          description: A medium-sized thumbnail
+          type: string
+          example: /image/cover-art/anh.jpg.256.jpg
+        title:
+          type: string
+          example: Boku no pico
+        latestChapter:
+          type: number
+          example: 16.5
+        comments:
+          description: Number of comments
+          type: integer
+          example: 105
+        views:
+          description: Number of views
+          type: integer
+          example: 15324
+        likes:
+          description: The result of likes minus dislikes.
+          type: integer
+          example: 24
 
 
 security:
