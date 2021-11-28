@@ -122,6 +122,12 @@ paths:
                   description: Image IDs from the database. The first will be selected as the cover thumbnail.
                   items: 
                     type: integer
+                primaryCoverArt:
+                  type: integer
+                  example: 1234
+                  description: Must be one of the cover arts.
+                  items: 
+                    type: integer
       responses:
         200:
           description: Created a new book group successfully
@@ -392,7 +398,7 @@ paths:
       security: []
       tags:
         - Book Chapters
-  /chapter/:
+  /auth/chapter/:
     post:
       summary: Post a new chapter
       description: A new book chapter to be posted, must belong to a book group.
@@ -582,7 +588,7 @@ paths:
                         userAvatar:
                           type: string
                           description: Url of user's avatar (small thumbnail)
-                          example: http://st.imageinstant.net/data/sites/1/useravatars/282930.jpg
+                          example: /avatar/2a82c91-12c-132131aba30.jpg
                         timePosted:
                           description: Timestamp of comment when created
                           type: integer
@@ -766,6 +772,7 @@ paths:
                   avatar:
                     type: string
                     description: Url of avatar
+                    example: /avatar/2a82c91-12c-132131aba30.jpg
                   description:
                     type: string
                     example: Mô tả người dùng...
@@ -846,6 +853,7 @@ paths:
           schema:
             type: integer
       operationId: getAuthorById
+      security: []
       responses:
         200:
           description: Successful request
@@ -933,7 +941,7 @@ paths:
         - Book Authors
   /auth/upload/{imageType}:
     post:
-      summary: Upload a new image
+      summary: Upload a new image from file
       description: Upload a new image, can be a user avatar / author avatar / chapter image content / cover art
       parameters:
         - name: imageType
@@ -945,17 +953,21 @@ paths:
               - chapter-image
               - user-avatar
               - author-avatar
+              - genre-image
               - cover-art
       operationId: uploadImage
       responses:
         200:
           description: Uploaded successfully
           content:
-            text/plain:
+            application/json:
               schema:
-                type: integer
+                type: object
                 description: The image id from the database
-                example: 1231
+                properties:
+                  id:
+                    type: integer
+                    example: 1231
 
         403:
           description: User not authorized
@@ -973,7 +985,7 @@ paths:
       summary: Get image from server
       description: Get image from server disk, with given location. (technically, `/image/{path}` should point to `/static/images/{path}` in disk)
       parameters:
-        - name: imageType
+        - name: path
           in: path
           required: true
           schema:
