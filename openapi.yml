@@ -684,8 +684,10 @@ paths:
               properties:
                 comment:
                   type: string
-                  description: The content of the comment to be posted. length <= 10 <= 500. Contains no more than 2 consecutive line breaks
+                  description: The content of the comment to be posted. Contains no more than 2 consecutive line breaks
                   example: Test thử comment cái
+                  minLength: 10
+                  maxLength: 500
       responses:
         '200':
           description: Posted successfully
