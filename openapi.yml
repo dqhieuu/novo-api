@@ -105,34 +105,34 @@ paths:
                 name:
                   type: string
                   example: One punch Man
-                  description: The name of this book group
+                  description: The name of this book group. Must not contain line break characters and control characters.
                 description:
                   type: string
+                  description: The book summary. Must not contain control characters.
                   example: The story of a hero named Saitama.
                 authors:
                   type: array
                   example: [123, 124, 125]
-                  description: Author IDs from the database
+                  description: Author IDs from the database. Accepts everything, but will only save non duplicates and valid author ids.
                   items: 
                     type: integer
                 coverArts:
                   type: array
                   example: [123, 124, 125]
-                  description: Image IDs from the database. The first will be selected as the cover thumbnail.
+                  description: Image IDs from the database. The last valid one will be selected as the cover thumbnail 
+                    if the primaryCoverArt is not set (in case this field has valid values).
                   items: 
                     type: integer
                 genres:
                   type: array
-                  description: Genre ids of this book.
+                  description: Genre IDs of this book. Accepts everything, but will only save non duplicates and valid ones.
                   example: [2,3,5]
-                  items: 
-                    type: array
-                    items:
-                      type: integer
+                  items:
+                    type: integer
                 primaryCoverArt:
                   type: integer
                   example: 1234
-                  description: Must be one of the cover arts.
+                  description: Must be one of the cover arts. No passing will automatically fall back to the last cover art of `coverArts`, if `coverArts` has valid values.
                   items: 
                     type: integer
       responses:
@@ -431,12 +431,12 @@ paths:
       security: []
       tags:
         - Book Chapters
-  /auth/chapter/:
+  /auth/chapter/images:
     post:
-      summary: Post a new chapter
-      description: A new book chapter to be posted, must belong to a book group.
+      summary: Post a new chapter (images type)
+      description: A new `images` type book chapter to be posted, must belong to a book group.
       parameters: []
-      operationId: postNewChapter
+      operationId: postNewChapterImages
       responses:
         200:
           description: OK
@@ -454,54 +454,70 @@ paths:
         content:
           application/json:
             schema:
-              oneOf:
-                - type: object
-                  required:
-                    - bookGroupId
-                    - chapterNumber
-                    - type
-                    - textContent
-                  properties:
-                    bookGroupId:
+                type: object
+                required:
+                  - bookGroupId
+                  - chapterNumber
+                  - images
+                properties:
+                  bookGroupId:
+                    type: integer
+                    example: 25
+                  name:
+                    type: string
+                    example: A story of rain
+                  chapterNumber:
+                    type: number
+                    example: 6.8
+                  images:
+                    description: IDs of images after uploaded to the server. Order matters!
+                    type: array
+                    items:
                       type: integer
-                      example: 25
-                    name:
-                      type: string
-                      example: A story of rain
-                    chapterNumber:
-                      type: number
-                      example: 6.8
-                    type:
-                      type: string
-                      enum: [hypertext]
-                    textContent:
-                      description: The hypertext content of the chapter.
-                      type: string
-                      example: "Some book content. Once upon..."
-                - type: object
-                  required:
-                    - bookGroupId
-                    - chapterNumber
-                    - type
-                    - images
-                  properties:
-                    bookGroupId:
-                      type: integer
-                      example: 25
-                    name:
-                      type: string
-                      example: A story of rain
-                    chapterNumber:
-                      type: number
-                      example: 6.8
-                    type:
-                      type: string
-                      enum: [images]
-                    images:
-                      description: IDs of images after uploaded to the server.
-                      type: array
-                      items:
-                        type: integer
+      tags:
+        - Book Chapters
+  /auth/chapter/hypertext:
+    post:
+      summary: Post a new chapter (hypertext type)
+      description: A new `hypertext` type book chapter to be posted, must belong to a book group.
+      parameters: []
+      operationId: postNewChapterHypertext
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                description: The chapter id after created
+                properties:
+                  id:
+                    type: integer
+                    example: 1231
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+                type: object
+                required:
+                  - bookGroupId
+                  - chapterNumber
+                  - textContent
+                properties:
+                  bookGroupId:
+                    type: integer
+                    example: 25
+                  name:
+                    type: string
+                    example: A story of rain
+                  chapterNumber:
+                    type: number
+                    example: 6.8
+                  textContent:
+                    description: The hypertext content of the chapter.
+                    type: string
+                    example: "Some book content. Once upon..."
       tags:
         - Book Chapters
     delete:
