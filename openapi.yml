@@ -229,29 +229,11 @@ paths:
                   coverArts:
                     type: array
                     items: 
-                      type: object
-                      required:
-                        - thumbnail
-                        - originalImage
-                      properties:
-                        thumbnail:
-                          type: string
-                          example: /image/author-s/a1241-4a43-4a.jpg
-                        originalImage:
-                          type: string
-                          example: /image/author/515-133-22.jpg
+                      type: string
+                      example: cover-art/515-133-22.jpg
                   primaryCoverArt:
-                      type: object
-                      required:
-                        - thumbnail
-                        - originalImage
-                      properties:
-                        thumbnail:
-                          type: string
-                          example: /image/author-s/a1241-4a43-4a.jpg
-                        originalImage:
-                          type: string
-                          example: /image/author/515-133-22.jpg
+                    type: string
+                    example: cover-art/515-133-22.jpg
 
         404:
           description: Book group not found
