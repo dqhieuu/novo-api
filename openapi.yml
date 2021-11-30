@@ -197,8 +197,8 @@ paths:
                     items:
                       type: object
                       required:
+                        - id
                         - name
-                        - url
                       properties:
                         name:
                           type: string
@@ -212,6 +212,9 @@ paths:
                     description: Genre ids and names of this book.
                     items: 
                       type: object
+                      required:
+                        - id
+                        - name
                       properties:
                         id:
                           type: integer
@@ -223,6 +226,11 @@ paths:
                     type: array
                     items:
                       type: object
+                      required:
+                        - chapterNumber
+                        - id
+                        - timePosted
+                        - userPosted
                       properties:
                         chapterNumber:
                           type: number
@@ -234,6 +242,23 @@ paths:
                           type: integer
                           description: Chapter id
                           example: 1231
+                        timePosted:
+                          type: integer
+                          description: Timestamp when it was posted
+                          example: 1612012011
+                        userPosted:
+                          type: object
+                          required:
+                            - id
+                            - name  
+                          properties:
+                            id:
+                              type: integer
+                              example: 124
+                            name:
+                              type: string
+                              example: nguyenVanA
+                            
 
                   coverArts:
                     type: array
