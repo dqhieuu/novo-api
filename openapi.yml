@@ -1139,7 +1139,7 @@ paths:
           required: true
           schema:
             type: string
-            example: cover-art/9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d.jpg
+            example: 12
         - name: page
           $ref: '#/components/parameters/Page'
       responses:
@@ -1245,8 +1245,7 @@ components:
       type: object
       required:
         - title
-        - url
-        - latestChapter
+        - id
       properties:
         title:
           type: string
@@ -1271,7 +1270,6 @@ components:
       required:
         - id
         - title
-        - latest3Chapters
         - comments
         - views
         - likes
@@ -1287,9 +1285,9 @@ components:
         title:
           type: string
           example: Boku no pico
-        latest3Chapters:
-          type: array
-          example: [1.1, 2, 3]
+        latestChapter:
+          type: number
+          example: 16.5
         comments:
           description: Number of comments
           type: integer
