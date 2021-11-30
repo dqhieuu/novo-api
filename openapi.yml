@@ -153,7 +153,7 @@ paths:
   /book/{bookGroupId}:
     get:
       summary: Get book group page content
-      description: Create a new book group by json request body.
+      description: Create a new book group by json request body. Arrays fields if empty must return an empty array.
       tags:
         - Book Groups
         
@@ -164,6 +164,15 @@ paths:
             application/json:
               schema:
                 type: object
+                required:
+                  - name
+                  - views
+                  - likeCount
+                  - dislikeCount
+                  - authors
+                  - genres
+                  - chapters
+                  - coverArts
                 properties:
                   name:
                     type: string
@@ -358,56 +367,57 @@ paths:
               schema:
                 oneOf:
                   - type: object
+                    required:
+                      - type
+                      - chapterNumber
+                      - images
+                      - bookGroupId
                     properties:
                       type:
                         type: string
                         example: images
                         enum:
                           - images
+                      bookGroupId: 
+                        type: integer
+                        example: 125
+                      chapterNumber: 
+                        type: integer
+                        example: 123
+                      name:
+                        type: string
+                        example: A story of rain
                       images:
                         type: array
                         description: A list of image urls
                         items:
                           type: string
-                      name:
-                        type: string
-                        example: A story of rain
-                      nextChapter:
-                        description: Id of the next book chapter
-                        type: integer
-                        example: 1214
-                      prevChapter:
-                        description: Id of the next book chapter
-                        type: integer
-                        example: 1211
-                    required:
-                      - type
-                      - images
                   - type: object
                     required:
                       - type
+                      - chapterNumber
                       - textContent
+                      - bookGroupId
                     properties:
                       type:
                         type: string
                         example: hypertext
                         enum:
                           - hypertext
+                      bookGroupId: 
+                        type: integer
+                        example: 125
+                      chapterNumber: 
+                        type: integer
+                        example: 123
+                      name:
+                        type: string
+                        example: A story of rain
                       textContent:
                         type: string
                         example: Call me Ishmael. Some years ago...
                         description: The content for a text chapter (may contain markdown formattting)
-                      name:
-                        type: string
-                        example: A story of rain
-                      nextChapter:
-                        description: Id of the next book chapter
-                        type: integer
-                        example: 1214
-                      prevChapter:
-                        description: Id of the next book chapter
-                        type: integer
-                        example: 1211
+
         404:
           description: Chapter not found
       security: []
