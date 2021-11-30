@@ -315,24 +315,7 @@ paths:
                     type: array
                     description: A suggestion list of books when searching.
                     items:
-                      type: object
-                      properties:
-                        thumbnail:
-                          description: A small-sized thumbnail
-                          type: string
-                          example: /image/cover-art/anh.jpg
-                        title:
-                          type: string
-                          description: Book title
-                          example: Boku no pico
-                        id:
-                          type: integer
-                          description: Book group id
-                          example: 1231
-                        latestChapter:
-                          type: number
-                          description: The highest number chapter
-                          example: 16.5
+                      $ref: '#/components/schemas/BookItem'
       tags:
         - Book Groups
       operationId: searchSuggestion
@@ -658,7 +641,7 @@ paths:
                       required:
                         - comment
                         - userName
-                        - id
+                        - userId
                         - timePosted
                       properties:
                         comment:
@@ -669,11 +652,10 @@ paths:
                           type: string
                         userId:
                           type: integer
-                          description: Id of user profile
                           example: 1231
                         userAvatar:
                           type: string
-                          description: Url of user's avatar (small thumbnail)
+                          description: Url of user's avatar
                           example: user-avatar/2a82c91-12c-132131aba30.jpg
                         timePosted:
                           description: Timestamp of comment when created
@@ -880,7 +862,7 @@ paths:
                   booksPosted:
                     type: array
                     items:
-                      $ref: '#/components/schemas/BookItem'
+                      $ref: '#/components/schemas/BookItemFull'
       tags:
         - Users
   /auth/role:
@@ -1264,7 +1246,7 @@ components:
       required:
         - title
         - url
-        - thumbnail
+        - latestChapter
       properties:
         title:
           type: string
@@ -1273,31 +1255,41 @@ components:
           type: integer
           description: The id of the book
           example: 12311
-        thumbnail:
-          description: The url of the book thumbnail. Middle-sized.
+        image:
+          description:  Image url (primary cover art)
           type: string
-          example: /image/book/s/25-232321-1231.jpg
+          example: cover-art/25-232321-1231.jpg
+        latestChapter:
+          type: number
+          example: 16.5
     LastPage:
       type: integer
       description: The last page number for pagination purposes
       example: 15
     BookItemFull:
       type: object
+      required:
+        - id
+        - title
+        - latest3Chapters
+        - comments
+        - views
+        - likes
       properties:
         id:
           type: integer
           description: Book group id
           example: 1231
-        thumbnail:
-          description: A medium-sized thumbnail
+        image:
+          description: Image url (primary cover art)
           type: string
-          example: /image/cover-art/anh.jpg.256.jpg
+          example: cover-art/123faf3-12bcd1-4.jpg
         title:
           type: string
           example: Boku no pico
-        latestChapter:
-          type: number
-          example: 16.5
+        latest3Chapters:
+          type: array
+          example: [1.1, 2, 3]
         comments:
           description: Number of comments
           type: integer
