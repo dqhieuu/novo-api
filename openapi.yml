@@ -434,7 +434,7 @@ paths:
                         example: 125
                       chapterNumber: 
                         type: integer
-                        example: 123
+                        example: 123.3
                       name:
                         type: string
                         example: A story of rain
@@ -646,8 +646,8 @@ paths:
               schema:
                 type: object
                 required:
-                  - likeCount
-                  - dislikeCount
+                  - comments
+                  - lastPage
                 properties:
                   lastPage:
                     $ref: '#/components/schemas/LastPage'
@@ -655,6 +655,11 @@ paths:
                     type: array
                     items:
                       type: object
+                      required:
+                        - comment
+                        - userName
+                        - id
+                        - timePosted
                       properties:
                         comment:
                           description: Content of a comment
@@ -662,18 +667,26 @@ paths:
                           example: Bình luận gì đó...
                         userName:
                           type: string
-                        id:
+                        userId:
                           type: integer
                           description: Id of user profile
                           example: 1231
                         userAvatar:
                           type: string
                           description: Url of user's avatar (small thumbnail)
-                          example: /user-avatar/2a82c91-12c-132131aba30.jpg
+                          example: user-avatar/2a82c91-12c-132131aba30.jpg
                         timePosted:
                           description: Timestamp of comment when created
                           type: integer
                           example: 1231111111
+                        chapterId:
+                          description: Chapter ID where this user commented (if available)
+                          type: integer
+                          example: 12341
+                        chapterNumber:
+                          description: Chapter number where this user commented (if available)
+                          type: number
+                          example: 4.3 
         404:
           description: Book group/chapter not found
       tags:
