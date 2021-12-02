@@ -649,6 +649,7 @@ paths:
                         - userName
                         - userId
                         - timePosted
+                        - commentId
                       properties:
                         comment:
                           description: Content of a comment
