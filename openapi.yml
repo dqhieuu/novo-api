@@ -430,7 +430,7 @@ paths:
   '/book/random':
     get:
       summary: Get random book groups
-      description: Get n random book group.
+      description: Get n random book groups.
       parameters:
         - name: limit
           in: query
