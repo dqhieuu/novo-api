@@ -471,6 +471,7 @@ paths:
                   name:
                     type: string
                     example: A story of rain
+                    maxLength: 50
                   chapterNumber:
                     type: number
                     example: 6.8
@@ -655,6 +656,10 @@ paths:
                           example: Bình luận gì đó...
                         userName:
                           type: string
+                          example: Tên ng dùng ABCD
+                        commentId:
+                          type: integer
+                          example: 1232
                         userId:
                           type: integer
                           example: 1231
