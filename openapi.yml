@@ -554,41 +554,41 @@ paths:
     #       description: Default response
     #   tags:
     #     - Book Chapters
-  '/like/{bookGroupId}':
-    get:
-      summary: Get like count of a book group
-      description: This gets the like and dislike count of a book group
-      parameters:
-        - name: bookGroupId
-          in: path
-          required: true
-          schema:
-            type: integer
-      security: []
-      operationId: getLikeAndDislikeCountByBookGroupId
-      responses:
-        200:
-          description: Successful get
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - likeCount
-                  - dislikeCount
-                properties:
-                  likeCount:
-                    type: integer
-                    example: 3
-                  dislikeCount:
-                    type: integer
-                    example: 0
-        404:
-          description: Book group not found
+  # '/like/{bookGroupId}':
+  #   get:
+  #     summary: Get like count of a book group
+  #     description: This gets the like and dislike count of a book group
+  #     parameters:
+  #       - name: bookGroupId
+  #         in: path
+  #         required: true
+  #         schema:
+  #           type: integer
+  #     security: []
+  #     operationId: getLikeAndDislikeCountByBookGroupId
+  #     responses:
+  #       200:
+  #         description: Successful get
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: object
+  #               required:
+  #                 - likeCount
+  #                 - dislikeCount
+  #               properties:
+  #                 likeCount:
+  #                   type: integer
+  #                   example: 3
+  #                 dislikeCount:
+  #                   type: integer
+  #                   example: 0
+  #       404:
+  #         description: Book group not found
 
 
-      tags:
-        - Book Groups
+  #     tags:
+  #       - Book Groups
   /like/{bookGroupId}/{operation}:
     post:
       summary: Like operations on a book group
