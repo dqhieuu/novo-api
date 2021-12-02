@@ -1285,9 +1285,9 @@ components:
         book.read, book.post, book.modifySelf, 
         book.modify, book.deleteSelf, book.delete,
         chapter.read, chapter.post, chapter.modifySelf, 
-        chapter.modify, chapter.deleteSelf, chapter.delete
-        author.read, author.post, author.modify, author.delete
-        user.readSelf, user.read, userPrivate.read
+        chapter.modify, chapter.deleteSelf, chapter.delete,
+        author.read, author.post, author.modify, author.delete,
+        user.readSelf, user.read, userPrivate.read,
         ]
     BookItem:
       type: object
