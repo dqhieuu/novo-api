@@ -898,8 +898,8 @@ paths:
         - Users
   /auth/role:
     get:
-      summary: Get my role permissions
-      description: Get role permissions, even if user is not logged in
+      summary: Get my user info
+      description: Get role permissions, user info required for displaying user.
       parameters: []
       operationId: getMyRolePermissions
       responses:
@@ -912,11 +912,25 @@ paths:
                 required:
                   - role
                   - permissions
+                  - id
+                  - name
+                  - avatar
                 properties:
                   role:
                     $ref: '#/components/schemas/UserRole'
                   permissions:
                     $ref: '#/components/schemas/RolePermissions'
+                  id:
+                    type: integer
+                    example: 1231
+                  name:
+                    type: string
+                    example: Hunter X
+                  avatar:
+                    type: string
+                    example: user-avatar/2a82c91-12c-132131aba30.jpg
+                  
+                  
       tags:
         - Users
   /auth/author:
