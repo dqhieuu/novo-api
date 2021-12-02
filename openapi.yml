@@ -378,6 +378,125 @@ paths:
 
       tags:
         - Book Groups
+  '/book/top/{type}':
+    get:
+      summary: Get top viewed book groups
+      description: Get top viewed book groups by month/week/year/all.
+      parameters:
+        - name: type
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - week
+              - month
+              - year
+              - all
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            minimum: 10
+            maximum: 100
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+      security: []
+      responses:
+        200:
+          description: Query success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - books
+                  - lastPage
+                properties:
+                  lastPage:
+                    $ref: '#/components/schemas/LastPage'
+                  books:
+                    type: array
+                    description: Books in a dedicated search page
+                       have more information than when searching.
+                    items:
+                      $ref: '#/components/schemas/BookItemFull'
+      tags:
+        - Book Groups
+  '/book/random':
+    get:
+      summary: Get random book groups
+      description: Get n random book group.
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            minimum: 10
+            maximum: 100
+      security: []
+      responses:
+        200:
+          description: Query success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - books
+                properties:
+                  books:
+                    type: array
+                    description: Books in a dedicated search page
+                       have more information than when searching.
+                    items:
+                      $ref: '#/components/schemas/BookItemFull'
+      tags:
+        - Book Groups
+  '/book/latest':
+    get:
+      summary: Get most recent book groups
+      description: Get most recent book groups ordered by newly added chapter
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            minimum: 10
+            maximum: 100
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+      security: []
+      responses:
+        200:
+          description: Query success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - books
+                  - lastPage
+                properties:
+                  lastPage:
+                    $ref: '#/components/schemas/LastPage'
+                  books:
+                    type: array
+                    description: Books in a dedicated search page
+                       have more information than when searching.
+                    items:
+                      $ref: '#/components/schemas/BookItemFull'
+      tags:
+        - Book Groups
   '/chapter/{chapterId}':
     get:
       summary: Get chapter page content
