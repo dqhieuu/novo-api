@@ -90,6 +90,26 @@ paths:
         - Users
       parameters: []
       operationId: loginByOAuthCode
+  /refresh-token:
+    post:
+      summary: Refresh user token
+      tags:
+        - Users
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Invalid credentials
+  /logout:
+    post:
+      summary: Logout user
+      tags:
+        - Users
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Invalid credentials
   /book:
     post:
       summary: Create a new book group
