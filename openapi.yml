@@ -1134,7 +1134,7 @@ paths:
                   books:
                     type: array
                     items:
-                      $ref: '#/components/schemas/BookItem'
+                      $ref: '#/components/schemas/BookItemFull'
 
         403:
           description: User not authorized
