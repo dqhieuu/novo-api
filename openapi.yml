@@ -294,6 +294,12 @@ paths:
     patch:
       summary: Update a book group
       description: Update a new book group by fields.
+      parameters:
+        - name: bookGroupId
+          in: path
+          required: true
+          schema:
+            type: integer
       requestBody:
         content:
           application/json:
@@ -724,6 +730,38 @@ paths:
                     example: "Some book content. Once upon..."
       tags:
         - Book Chapters
+    patch:
+      summary: Update a hypertext chapter
+      description: Update fields of `hypertext` chapter.
+      parameters:
+        - name: chapterId
+          in: path
+          schema:
+            type: number
+          required: true
+      responses:
+        200:
+          description: OK
+      tags:
+        - Book Chapters
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: A story of rain
+                  chapterNumber:
+                    type: number
+                    example: 6.8
+                  textContent:
+                    description: The hypertext content of the chapter.
+                    type: string
+                    example: "Some book content. Once upon..."
+  /auth/chapter/{chapterId}:
     delete:
       summary: Delete a book chapter
       description: ''
@@ -743,16 +781,7 @@ paths:
           description: Book chapter not found
       tags:
         - Book Chapters
-    # patch:
-    #   summary: Update book chapter content
-    #   description: ''
-    #   parameters: []
-    #   operationId: updateChapterByChapterId
-    #   responses:
-    #     default:
-    #       description: Default response
-    #   tags:
-    #     - Book Chapters
+                
   # '/like/{bookGroupId}':
   #   get:
   #     summary: Get like count of a book group
