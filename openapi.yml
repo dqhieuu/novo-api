@@ -291,6 +291,65 @@ paths:
 
         404:
           description: Book group not found
+    patch:
+      summary: Update a book group
+      description: Update a new book group by fields.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: One punch Man
+                  description: The name of this book group. Must not contain line break characters and control characters.
+                description:
+                  type: string
+                  description: The book summary. Must not contain control characters.
+                  example: The story of a hero named Saitama.
+                authors:
+                  type: array
+                  example: [123, 124, 125]
+                  description: Author IDs from the database. Accepts everything, but will only save non duplicates and valid author ids.
+                  items: 
+                    type: integer
+                coverArts:
+                  type: array
+                  example: [123, 124, 125]
+                  description: Image IDs from the database. The last valid one will be selected as the cover thumbnail 
+                    if the primaryCoverArt is not set (in case this field has valid values).
+                  items: 
+                    type: integer
+                genres:
+                  type: array
+                  description: Genre IDs of this book. Accepts everything, but will only save non duplicates and valid ones.
+                  example: [2,3,5]
+                  items:
+                    type: integer
+                primaryCoverArt:
+                  type: integer
+                  example: 1234
+                  description: Must be one of the cover arts. No passing will automatically fall back to the last cover art of `coverArts`, if `coverArts` has valid values.
+                  items: 
+                    type: integer
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                description: The book group id after created
+                properties:
+                  id:
+                    type: integer
+                    example: 1231
+        403:
+          description: User not authorized
+        409:
+          description: Conflict or conditions not met
+      tags: [Book Groups]
     delete:
       summary: Delete a book group
       description: Delete a book group by its id. Will delete all containing book chapters.
