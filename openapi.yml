@@ -686,6 +686,40 @@ paths:
                       type: integer
       tags:
         - Book Chapters
+  /auth/chapter/images/{chapterId}:
+    patch:
+      summary: Update an images chapter
+      description: Update fields of `images` chapter.
+      parameters:
+        - name: chapterId
+          in: path
+          schema:
+            type: number
+          required: true
+      responses:
+        200:
+          description: OK
+      tags:
+        - Book Chapters
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: A story of rain
+                  chapterNumber:
+                    type: number
+                    example: 6.8
+                  images:
+                    example: [15,16,18]
+                    description: IDs of images after uploaded to the server. Order matters!
+                    type: array
+                    items:
+                      type: integer
   /auth/chapter/hypertext:
     post:
       summary: Post a new chapter (hypertext type)
@@ -730,6 +764,7 @@ paths:
                     example: "Some book content. Once upon..."
       tags:
         - Book Chapters
+  /auth/chapter/hypertext/{chapterId}:
     patch:
       summary: Update a hypertext chapter
       description: Update fields of `hypertext` chapter.
