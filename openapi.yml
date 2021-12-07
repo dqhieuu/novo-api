@@ -90,7 +90,7 @@ paths:
         - Users
       parameters: []
       operationId: loginByOAuthCode
-  /refresh-token:
+  /auth/refresh-token:
     post:
       summary: Refresh user token
       tags:
@@ -100,7 +100,7 @@ paths:
           description: OK
         '401':
           description: Invalid credentials
-  /logout:
+  /auth/logout:
     post:
       summary: Logout user
       tags:
@@ -110,7 +110,7 @@ paths:
           description: OK
         '401':
           description: Invalid credentials
-  /book:
+  /auth/book:
     post:
       summary: Create a new book group
       description: Create a new book group by json request body.
@@ -291,6 +291,7 @@ paths:
 
         404:
           description: Book group not found
+  /auth/book/{bookGroupId}:
     patch:
       summary: Update a book group
       description: Update a new book group by fields.
@@ -375,7 +376,7 @@ paths:
       tags:
         - Book Groups
 
-  '/search-suggest/{query}':
+  /search-suggest/{query}:
     get:
       summary: Search suggestion
       description: Suggestion when typing text in the search box.
@@ -406,7 +407,7 @@ paths:
       tags:
         - Book Groups
       operationId: searchSuggestion
-  '/search/{query}':
+  /search/{query}:
     get:
       summary: Search result
       description: Result page containing book groups after hitting enter.
@@ -852,7 +853,7 @@ paths:
 
   #     tags:
   #       - Book Groups
-  /like/{bookGroupId}/{operation}:
+  /auth/like/{bookGroupId}/{operation}:
     post:
       summary: Like operations on a book group
       description: Like/dislike/or unlike operation by a user for a book group
