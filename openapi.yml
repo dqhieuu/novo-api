@@ -1269,6 +1269,40 @@ paths:
 
       tags:
         - Book Authors
+  /search-author/{query}:
+    get:
+      summary: Search for an author
+      description: Author suggestion when typing text.
+      parameters:
+        - name: query
+          in: path
+          required: true
+          schema:
+            type: string
+            example: nguyen v
+            maxLength: 100
+      security: []
+      responses:
+        '200':
+          description: Shows maximum 5 authors
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - books
+                properties:
+                  authors:
+                    type: array
+                    description: A suggestion list of books when searching.
+                    example: [{id: 5, name: Nguyễn Văn A},{id: 7, name: Nguyễn Văn B}]
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+      tags:
+        - Book Authors
   /auth/author/{authorId}:
     patch:
       summary: Update an author
