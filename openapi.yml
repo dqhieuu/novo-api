@@ -1141,7 +1141,7 @@ paths:
         - Users
   /auth/role:
     get:
-      summary: Get my user info
+      summary: Get my role info
       description: Get role permissions, user info required for displaying user.
       parameters: []
       operationId: getMyRolePermissions
@@ -1172,7 +1172,9 @@ paths:
                   avatar:
                     type: string
                     example: user-avatar/2a82c91-12c-132131aba30.jpg
-                  
+                  email:
+                    type: string
+                    example: hieu@edu.vnu.us
                   
       tags:
         - Users
