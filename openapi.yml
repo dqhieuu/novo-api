@@ -1098,6 +1098,42 @@ paths:
                   description: An image id from the database
       tags:
         - Users
+  /search-user/{query}:
+    get:
+      summary: Search for an user
+      description: User suggestion when typing text.
+      parameters:
+        - name: query
+          in: path
+          required: true
+          schema:
+            type: string
+            example: nguyen v
+            maxLength: 100
+      security: []
+      responses:
+        '200':
+          description: Shows maximum 5 users
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - books
+                properties:
+                  authors:
+                    type: array
+                    description: A suggestion list of users when searching.
+                    example: [{id: 5, name: Nguyễn Văn A, image: user-avatar/123dsad23f1.jpg}]
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                      image:
+                        type: string
+      tags:
+        - Users
   /user/{userId}:
     get:
       summary: Get public user info page
@@ -1296,11 +1332,13 @@ paths:
                   authors:
                     type: array
                     description: A suggestion list of books when searching.
-                    example: [{id: 5, name: Nguyễn Văn A},{id: 7, name: Nguyễn Văn B}]
+                    example: [{id: 5, name: Nguyễn Văn A, image: cover-art/123dsad23f1.jpg}]
                     properties:
                       id:
                         type: integer
                       name:
+                        type: string
+                      image:
                         type: string
       tags:
         - Book Authors
