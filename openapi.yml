@@ -1117,21 +1117,16 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - books
+                type: array
+                description: A suggestion list of users when searching.
+                example: [{id: 5, name: Nguyễn Văn A, image: user-avatar/123dsad23f1.jpg}]
                 properties:
-                  authors:
-                    type: array
-                    description: A suggestion list of users when searching.
-                    example: [{id: 5, name: Nguyễn Văn A, image: user-avatar/123dsad23f1.jpg}]
-                    properties:
-                      id:
-                        type: integer
-                      name:
-                        type: string
-                      image:
-                        type: string
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  image:
+                    type: string
       tags:
         - Users
   /user/{userId}:
@@ -1325,21 +1320,16 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - books
+                type: array
+                description: A suggestion list of authors when searching.
+                example: [{id: 5, name: Nguyễn Văn A, image: author-avatar/123dsad23f1.jpg}]
                 properties:
-                  authors:
-                    type: array
-                    description: A suggestion list of books when searching.
-                    example: [{id: 5, name: Nguyễn Văn A, image: cover-art/123dsad23f1.jpg}]
-                    properties:
-                      id:
-                        type: integer
-                      name:
-                        type: string
-                      image:
-                        type: string
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  image:
+                    type: string
       tags:
         - Book Authors
   /auth/author/{authorId}:
