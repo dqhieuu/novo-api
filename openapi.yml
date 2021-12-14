@@ -948,6 +948,87 @@ paths:
           description: Book group/chapter not found
       tags:
         - Book Comments
+  /comment/latest:
+    get:
+      summary: Get latest comments
+      description: >-
+        Get latest comments regardless of book group/book chapter
+      operationId: getLatestComments
+      security: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - comments
+                  - lastPage
+                properties:
+                  comments:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                        - comment
+                        - userName
+                        - userId
+                        - timePosted
+                        - commentId
+                        - book
+                      properties:
+                        comment:
+                          description: Content of a comment
+                          type: string
+                          example: Bình luận gì đó...
+                        userName:
+                          type: string
+                          example: Tên ng dùng ABCD
+                        commentId:
+                          type: integer
+                          example: 1232
+                        userId:
+                          type: integer
+                          example: 1231
+                        userAvatar:
+                          type: string
+                          description: Url of user's avatar
+                          example: user-avatar/2a82c91-12c-132131aba30.jpg
+                        timePosted:
+                          description: Timestamp of comment when created
+                          type: integer
+                          example: 1231111111
+                        book:
+                          type: object
+                          required:
+                            - name
+                            - id
+                          properties:
+                            name:
+                              description: Book name where this user commented 
+                              type: integer
+                              example: 12341
+                            id:
+                              description: Book id where this user commented
+                              type: number
+                              example: 4.3
+                        chapter:
+                          type: object
+                          properties:
+                            id:
+                              description: Chapter ID where this user commented (if available)
+                              type: integer
+                              example: 12341
+                            number:
+                              description: Chapter number where this user commented (if available)
+                              type: number
+                              example: 4.3 
+                            name: 
+                              type: string
+                              example: Chapter name
+      tags:
+        - Book Comments
   /auth/comment:
     post:
       summary: Post a comment in a book group/chapter
@@ -1171,6 +1252,64 @@ paths:
                       $ref: '#/components/schemas/BookItemFull'
       tags:
         - Users
+  /change-password:
+    patch:
+      summary: Change current user password
+      description: Change user password, if a user has input their old password correctly
+      operationId: changeUserPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - oldPassword
+                - newPassword
+              properties:
+                oldPassword:
+                  type: string
+                  description: The old password
+                newPassword:
+                  type: string
+                  description: A new password
+      responses:
+        200:
+          description: OK
+        403:
+          description: Wrong password/ Changed to invalid password
+      tags:
+        - Users
+  /change-user-info:
+    patch:
+      summary: Change current user info
+      description: Change user password, if a user has input their old password correctly
+      operationId: changeUserInfo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: A new email
+                username:
+                  type: string
+                  description: A new username
+                description:
+                  type: string
+                  description: A new user description
+      responses:
+        200:
+          description: OK
+        403:
+          description: Conflicting data/Invalid data
+      tags:
+        - Users
+
+
   /auth/role:
     get:
       summary: Get my role info
