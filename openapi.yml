@@ -251,6 +251,7 @@ paths:
                         - id
                         - timePosted
                         - userPosted
+                        - views
                       properties:
                         chapterNumber:
                           type: number
@@ -266,6 +267,10 @@ paths:
                           type: integer
                           description: Timestamp when it was posted
                           example: 1612012011
+                        views:
+                          type: integer
+                          description: View count of this chapter
+                          example: 2512
                         userPosted:
                           type: object
                           required:
