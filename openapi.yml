@@ -1252,7 +1252,7 @@ paths:
                       $ref: '#/components/schemas/BookItemFull'
       tags:
         - Users
-  /change-password:
+  /auth/change-password:
     patch:
       summary: Change current user password
       description: Change user password, if a user has input their old password correctly
@@ -1280,7 +1280,7 @@ paths:
           description: Wrong password/ Changed to invalid password
       tags:
         - Users
-  /change-user-info:
+  /auth/change-user-info:
     patch:
       summary: Change current user info
       description: Change user password, if a user has input their old password correctly
