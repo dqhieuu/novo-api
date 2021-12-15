@@ -982,6 +982,8 @@ paths:
                         - timePosted
                         - commentId
                         - book
+                        - bookName
+                        - bookId
                       properties:
                         comment:
                           description: Content of a comment
@@ -1004,34 +1006,25 @@ paths:
                           description: Timestamp of comment when created
                           type: integer
                           example: 1231111111
-                        book:
-                          type: object
-                          required:
-                            - name
-                            - id
-                          properties:
-                            name:
-                              description: Book name where this user commented 
-                              type: integer
-                              example: 12341
-                            id:
-                              description: Book id where this user commented
-                              type: number
-                              example: 4.3
-                        chapter:
-                          type: object
-                          properties:
-                            id:
-                              description: Chapter ID where this user commented (if available)
-                              type: integer
-                              example: 12341
-                            number:
-                              description: Chapter number where this user commented (if available)
-                              type: number
-                              example: 4.3 
-                            name: 
-                              type: string
-                              example: Chapter name
+                        bookName:
+                          description: Book name where this user commented 
+                          type: integer
+                          example: 12341
+                        bookId:
+                          description: Book id where this user commented
+                          type: number
+                          example: 4.3
+                        chapterId:
+                          description: Chapter ID where this user commented (if available)
+                          type: integer
+                          example: 12341
+                        chapterNumber:
+                          description: Chapter number where this user commented (if available)
+                          type: number
+                          example: 4.3 
+                        chaptername: 
+                          type: string
+                          example: Chapter name
       tags:
         - Book Comments
   /auth/comment:
@@ -1563,7 +1556,9 @@ paths:
                   id:
                     type: integer
                     example: 1231
-
+                  path:
+                    type: string
+                    example: user-avatar/fa12312f1-1f1-23ab.jpg
         403:
           description: User not authorized
       requestBody:
