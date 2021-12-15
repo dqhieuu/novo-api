@@ -126,6 +126,10 @@ paths:
                   type: string
                   example: One punch Man
                   description: The name of this book group. Must not contain line break characters and control characters.
+                alias:
+                  type: string
+                  example: Anh hùng saitama; wan-pan
+                  description: (New) The aliases of this book group name. Separated by a ';'
                 description:
                   type: string
                   description: The book summary. Must not contain control characters.
@@ -198,10 +202,13 @@ paths:
                     type: string
                     example: One punch Man
                     description: The name of this book group
+                  alias:
+                    type: string
+                    example: Anh hùng saitama; wan-pan
+                    description: (New) The aliases of this book group name. Separated by a ';'
                   description:
                     type: string
                     example: The story of a hero named Saitama.
-
                   views:
                     example: 1245
                     type: integer
@@ -316,6 +323,10 @@ paths:
                   type: string
                   example: One punch Man
                   description: The name of this book group. Must not contain line break characters and control characters.
+                alias:
+                  type: string
+                  example: Anh hùng saitama; wan-pan
+                  description: (New) The aliases of this book group name. Separated by a ';'
                 description:
                   type: string
                   description: The book summary. Must not contain control characters.
@@ -1383,6 +1394,10 @@ paths:
                   type: string
                   maxLength: 30
                   example: Aldous Huxley
+                alias:
+                  type: string
+                  example: Adolf Hitler;Test Abc
+                  description: (New) The aliases of this author name. Separated by a ';'
                 description:
                   type: string
                   maxLength: 500
@@ -1419,6 +1434,10 @@ paths:
                   name:
                     type: string
                     example: George R.R. Washington
+                  alias:
+                    type: string
+                    example: Adolf Hitler;Test Abc
+                    description: (New) The aliases of this author name. Separated by a ';'
                   description:
                     type: string
                     example: A novelist who wrote the script for the famous movie, The Ring.
@@ -1488,6 +1507,10 @@ paths:
                 name:
                   type: string
                   example: New author name
+                alias:
+                  type: string
+                  example: Adolf Hitler;Test Abc
+                  description: (New) The aliases of this author name. Separated by a ';'
                 description:
                   type: string
                   example: Some modified author description.
