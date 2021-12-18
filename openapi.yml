@@ -1292,7 +1292,7 @@ paths:
   /auth/change-user-info:
     patch:
       summary: Change current user info
-      description: Change user password, if a user has input their old password correctly
+      description: Change user info
       operationId: changeUserInfo
       requestBody:
         required: true
@@ -1310,6 +1310,9 @@ paths:
                 description:
                   type: string
                   description: A new user description
+                avatar:
+                  type: integer
+                  description: An image id from the database
       responses:
         200:
           description: OK
