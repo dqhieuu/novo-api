@@ -295,11 +295,20 @@ paths:
                   coverArts:
                     type: array
                     items: 
-                      type: string
-                      example: cover-art/515-133-22.jpg
+                      type: object
+                      properties:
+                        path:
+                          type: string
+                          example: cover-art/515-133-22.jpg
+                        id:
+                          type: integer
+                          example: cover-art/515-133-22.jpg
                   primaryCoverArt:
                     type: string
                     example: cover-art/515-133-22.jpg
+                  primaryCoverArtId:
+                    type: integer
+                    example: 12
 
         404:
           description: Book group not found
@@ -623,9 +632,19 @@ paths:
                         example: A story of rain
                       images:
                         type: array
-                        description: A list of image urls
-                        items:
-                          type: string
+                        description: A list of images
+                        items: 
+                          type: object
+                          required:
+                            - path
+                            - id
+                          properties:
+                            path:
+                              type: string
+                              example: cover-art/515-133-22.jpg
+                            id:
+                              type: integer
+                              example: cover-art/515-133-22.jpg
                   - type: object
                     required:
                       - type
@@ -1452,6 +1471,9 @@ paths:
                     type: string
                     example: image/author-avatar/123124.jpg
                     description: The url of his avatar. Large-sized.
+                  avatarId:
+                    type: integer
+                    example: 25
                   books:
                     type: array
                     items:
