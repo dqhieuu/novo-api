@@ -996,65 +996,59 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - comments
-                  - lastPage
-                properties:
-                  comments:
-                    type: array
-                    items:
-                      type: object
-                      required:
-                        - comment
-                        - userName
-                        - userId
-                        - timePosted
-                        - commentId
-                        - book
-                        - bookName
-                        - bookId
-                      properties:
-                        comment:
-                          description: Content of a comment
-                          type: string
-                          example: Bình luận gì đó...
-                        userName:
-                          type: string
-                          example: Tên ng dùng ABCD
-                        commentId:
-                          type: integer
-                          example: 1232
-                        userId:
-                          type: integer
-                          example: 1231
-                        userAvatar:
-                          type: string
-                          description: Url of user's avatar
-                          example: user-avatar/2a82c91-12c-132131aba30.jpg
-                        timePosted:
-                          description: Timestamp of comment when created
-                          type: integer
-                          example: 1231111111
-                        bookName:
-                          description: Book name where this user commented 
-                          type: integer
-                          example: 12341
-                        bookId:
-                          description: Book id where this user commented
-                          type: number
-                          example: 4.3
-                        chapterId:
-                          description: Chapter ID where this user commented (if available)
-                          type: integer
-                          example: 12341
-                        chapterNumber:
-                          description: Chapter number where this user commented (if available)
-                          type: number
-                          example: 4.3 
-                        chaptername: 
-                          type: string
-                          example: Chapter name
+                type: array
+                items:
+                  type: object
+                  required:
+                    - comment
+                    - userName
+                    - userId
+                    - timePosted
+                    - commentId
+                    - book
+                    - bookName
+                    - bookId
+                  properties:
+                    comment:
+                      description: Content of a comment
+                      type: string
+                      example: Bình luận gì đó...
+                    userName:
+                      type: string
+                      example: Tên ng dùng ABCD
+                    commentId:
+                      type: integer
+                      example: 1232
+                    userId:
+                      type: integer
+                      example: 1231
+                    userAvatar:
+                      type: string
+                      description: Url of user's avatar
+                      example: user-avatar/2a82c91-12c-132131aba30.jpg
+                    timePosted:
+                      description: Timestamp of comment when created
+                      type: integer
+                      example: 1231111111
+                    bookName:
+                      description: Book name where this user commented 
+                      type: integer
+                      example: 12341
+                    bookId:
+                      description: Book id where this user commented
+                      type: number
+                      example: 4.3
+                    chapterId:
+                      description: Chapter ID where this user commented (if available)
+                      type: integer
+                      example: 12341
+                    chapterNumber:
+                      description: Chapter number where this user commented (if available)
+                      type: number
+                      example: 4.3 
+                    chapterName: 
+                      type: string
+                      example: Chapter name
       tags:
         - Book Comments
   /auth/comment:
