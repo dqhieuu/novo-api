@@ -1252,6 +1252,10 @@ paths:
                     type: string
                     description: Url of avatar
                     example: /avatar/2a82c91-12c-132131aba30.jpg
+                  avatarId:
+                    type: integer
+                    description: Avatar image id in database, may be null
+                    example: 15
                   description:
                     type: string
                     example: Mô tả người dùng...
