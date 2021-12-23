@@ -219,6 +219,9 @@ paths:
                   dislikeCount:
                     type: integer
                     example: 0
+                  ownerId:
+                    type: integer
+                    example: 3
                   authors:
                     type: array
                     items:
