@@ -1379,7 +1379,33 @@ paths:
                   email:
                     type: string
                     example: hieu@edu.vnu.us
-                  
+      tags:
+        - Users
+    patch:
+      summary: Set user role (admin only)
+      description: Admin sets (modifies) the role of a specific user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+                - role
+              properties:
+                userId:
+                  type: integer
+                  example: 1231
+                role:
+                  type: string
+                  description: Can only set to member, moderator, or banned.
+                  enum: [member, moderator, banned]
+                  example: member
+      operationId: setRole
+      responses:
+        200:
+          description: Role list
       tags:
         - Users
   /auth/author:
