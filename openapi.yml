@@ -1383,7 +1383,7 @@ paths:
         - Users
     patch:
       summary: Set user role (admin only)
-      description: Admin sets (modifies) the role of a specific user.
+      description: Admin sets (modifies) the role of a specific user. (extracting permission role.modify)
       requestBody:
         required: true
         content:
