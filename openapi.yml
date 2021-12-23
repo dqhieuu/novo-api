@@ -197,6 +197,7 @@ paths:
                   - genres
                   - chapters
                   - coverArts
+                  - ownerId
                 properties:
                   name:
                     type: string
